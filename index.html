@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>RTDDE.UnitSearch</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-slider.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        body {
+            padding-top: 100px;
+        }
+        
+        #iconContainer {
+            padding: 0px 0 0 0;
+            text-align: center;
+        }
+        
+        #iconContainer li {
+            cursor: pointer;
+            list-style-type: none;
+            display: inline-block;
+        }
+        
+        .icon {
+            margin: 8px 10px;
+        }
+        
+        .panel-heading {
+            cursor: pointer;
+        }
+        
+        .status-label {
+            text-align: right;
+            padding-right: 25px;
+            width: 75px;
+            float: left;
+        }
+        
+        .pager-fixed-top {
+            position: fixed;
+            width: 100%;
+            top: 50px;
+            z-index: 512;
+        }
+        
+        .pager-fixed-top .pager {
+            margin: 10px 0;
+        }
+        
+        .top-background {
+            position: fixed;
+            top: 0px;
+            width: 100%;
+            height: 125px;
+            background: linear-gradient(180deg, white, white 75px, transparent 100px, transparent);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+                    aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+                <a class="navbar-brand" href="#">RTDDE.UnitSearch</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Unit</a></li>
+                    <li class="disabled"><a href="#">Quest</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#">About</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span id="currentLang" /> <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">ja-JP</a></li>
+                            <li><a href="#">zh-CHT</a></li>
+                            <li><a href="#">en-US</a></li>
+                            <li><a href="#">zh-CHS</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+    </nav>
+    <nav class="pager-fixed-top">
+        <ul class="pager">
+            <li><a href="javascript:Unit.doPage('<<<')"><span class="glyphicon glyphicon-menu-left"></span><span class="glyphicon glyphicon-menu-left"></span><span class="glyphicon glyphicon-menu-left"></span></a></li>
+            <li><a href="javascript:Unit.doPage('<')"><span class="glyphicon glyphicon-menu-left"></span></a></li>
+            <li><span id="pageInfo"></span></li>
+            <li><a href="javascript:Unit.doPage('>')"><span class="glyphicon glyphicon-menu-right"></span></a></li>
+            <li><a href="javascript:Unit.doPage('>>>')"><span class="glyphicon glyphicon-menu-right"></span><span class="glyphicon glyphicon-menu-right"></span><span class="glyphicon glyphicon-menu-right"></span></a></li>
+        </ul>
+    </nav>
+    <div class="top-background"></div>
+    <ul id='iconContainer'>
+        <li><img class='icon' src='/img/Icon/icon_locked.png'></li>
+    </ul>
+
+
+    <script src="js/jquery-1.12.3.js"></script>
+    <script src="js/jquery.unveil.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-slider.min.js"></script>
+    <script src="js/underscore.js"></script>
+    <script src="js/backbone.js"></script>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
+
+<script id="unitModalTemplate" type="text/template">
+    <div id='unitModal' data-id='<%= id%>' class='modal fade' tabindex='-1' role='dialog'>
+        <div class='modal-dialog'>
+            <div class='modal-content'>
+                <div class='modal-header'>
+                    <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
+                    <h4 class='modal-title' id='myModalLabel'>
+                    <span style="padding-right:10px">No.<%= gId %></span>
+                    <span style="padding-right:10px"><%= name %></span>
+                    <span><%= Unit.convertRarityToStar(category) %></span>
+                </h4>
+                </div>
+                <div class='modal-body'>
+                    <div class="media">
+                        <div class="media-left">
+                            <img class="media-object" src='/img/Icon/I<%= gId %>.png' />
+                        </div>
+                        <div class="media-body">
+                            <div>
+                                <div style="float:right;padding:20px;">
+                                    <input id="unitLevel" type="text" />
+                                </div>
+                                <div>
+                                    <div class="status-label">Life</div>
+                                    <span id='unitLife' />
+                                </div>
+                                <div>
+                                    <div class="status-label">Attack</div>
+                                    <span id='unitAttack' />
+                                </div>
+                                <div>
+                                    <div class="status-label">Heal</div>
+                                    <span id='unitHeal' />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-group" id="unitExtraInfo" role="tablist">
+                        <% if(_.every(revData,function(o){return o==0;})==false){ %>
+                            <div class="panel panel-default">
+                                <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseEvolve">Evolve</div>
+                                <div id="collapseEvolve" class="panel-collapse collapse">
+                                    <ul class="list-group">
+                                        <% _.each(revData, function(o,i) {
+                                    var unit=_.find(UnitList,function(u){return u.id==o;});
+                                    if(!unit){return;}
+                                     %>
+                                            <li class="list-group-item">
+                                                <div class="media">
+                                                    <div class="media-left">
+                                                        <img class="media-object" data-id="<%= unit.id %>" src='/img/Icon/I<%= unit.gId %>.png' />
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <div>
+                                                            <span style="padding-right:10px">No.<%= unit.gId %></span>
+                                                            <span style="padding-right:10px"><%= unit.name %></span>
+                                                            <span><%= Unit.convertRarityToStar(unit.category) %></span>
+                                                        </div>
+                                                        <div>
+                                                            Evolve:
+                                                            <%= needPt %>pt
+                                                        </div>
+                                                        <% if(i>0){ %>
+                                                            <div>
+                                                                Awakening:
+                                                                <%= maxAttributeExp %>pt
+                                                            </div>
+                                                            <% } %>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <% }); %>
+                                    </ul>
+                                </div>
+                            </div>
+                            <% } %>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseSkill">Skill</div>
+                                    <div id="collapseSkill" class="panel-collapse collapse in">
+                                        <ul class="list-group">
+                                            <li class="list-group-item">Cras justo odio</li>
+                                            <li class="list-group-item">Dapibus ac facilisis in</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseStory">Story</div>
+                                    <div id="collapseStory" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <div style="text-align:center;">
+                                                <%= Unit.formatStory(story)%>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseCutin">Cutin</div>
+                                    <div id="collapseCutin" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <div style="text-align:center;">
+                                                <% _.each(cutin, function(i) { %>
+                                                    <p>
+                                                        <%= i %>
+                                                    </p>
+                                                    <% }); %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% if(accessory){ %>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseAccessory">Accessory</div>
+                                        <div id="collapseAccessory" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <div class="media">
+                                                    <div class="media-left">
+                                                        <img class="media-object" src='/img/AI/<%= accessory.icon %>.png' />
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <div>
+                                                            <%= accessory.name %>
+                                                        </div>
+                                                        <div>
+                                                            <%= Unit.formatRichText(accessory.detail) %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
