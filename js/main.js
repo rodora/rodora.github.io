@@ -1,4 +1,4 @@
-var UnitList = [];
+var Data = {};
 var app_router;
 var UnitParam = {
     CategoryPer: [
@@ -33,41 +33,63 @@ var UnitParam = {
     ]
 };
 var Unit = {
-    init: function (callback) {
+    init: function (type) {
+        var dtd = $.Deferred();
+        if (!type) {
+            dtd.reject();
+            return dtd.promise();
+        }
+        type = type.toLowerCase();
         var self = this;
-        var force = self.isUnitDataTooOld();
-        var json = localStorage.getItem("unit");
-        if (json && !force) {
-            var data = JSON.parse(json);
-            console.log("Get unitdata from cache. ", data);
-            UnitList = data;
-            callback.call(this);
-        }
-        else {
-            $.ajax({
-                url: '/data/unit.json',
-                cache: false,
-                dataType: "json",
-                success: function (data) {
-                    localStorage["unit"] = JSON.stringify(data);
-                    console.log("Get unitdata from web. ", data);
-                    UnitList = data;
-                    callback.call(this);
-                }
-            });
-        }
+        return self.isDataTooOld().then(function (force) {
+            var json = localStorage.getItem(type);
+            if (json && !force) {
+                var data = JSON.parse(json);
+                console.log("Get data from cache. ", type);
+                Data[type] = data;
+                dtd.resolve();
+                return dtd.promise();
+            }
+            else {
+                return $.ajax({
+                    url: '/data/' + type + '.json',
+                    cache: false,
+                    dataType: "json"
+                })
+                    .done(function (data) {
+                        localStorage[type] = JSON.stringify(data);
+                        console.log("Get data from web. ", type);
+                        Data[type] = data;
+                    });
+            }
+        });
     },
 
-    isUnitDataTooOld: function () {
-
+    isDataTooOld: function () {
+        var dtd = $.Deferred();
+        var lastUpdate = localStorage.getItem("lastUpdate");
+        if (!lastUpdate) {
+            dtd.resolve();
+            return dtd.promise(false);
+        }
+        return $.ajax({
+            url: '/data/lastUpdate.json',
+            cache: false,
+            dataType: "json"
+        }).then(function (data) {
+            var local = JSON.parse(lastUpdate);
+            var remote = data;
+            return new Date(local).getTime() < new Date(remote).getTime();
+        });
     },
 
     doPage: function (mode) {
+        console.log("doPage");
         var page = 1;
         if (localStorage["page"]) {
             page = JSON.parse(localStorage["page"]);
         }
-        var maxUnit = _.max(UnitList, function (o) { return parseInt(o.gId); });
+        var maxUnit = _.max(Data.unit, function (o) { return parseInt(o.gId); });
         var maxPage = Math.ceil(parseInt(maxUnit.gId) / 100);
         switch (mode) {
             case "<<<": page = 1; break;
@@ -90,13 +112,14 @@ var Unit = {
     },
 
     renderIconList: function () {
+        console.log("renderIconList");
         var self = this;
         var page = 1;
         if (localStorage["page"]) {
             page = JSON.parse(localStorage["page"]);
         }
         $('#iconContainer').empty();
-        var unitpagelist = _.filter(UnitList, function (o) {
+        var unitpagelist = _.filter(Data.unit, function (o) {
             var i = parseInt(o.gId);
             return (i <= page * 100) && (i > (page - 1) * 100);
         });
@@ -164,6 +187,31 @@ var Unit = {
                 $modal.find("#unitLife").text(Math.floor(Math.pow(Math.pow(lv, categoryPer), lifePer) * unit.life));
                 $modal.find("#unitAttack").text(Math.floor(Math.pow(Math.pow(lv, categoryPer), attackPer) * unit.attack));
                 $modal.find("#unitHeal").text(Math.floor(Math.pow(Math.pow(lv, categoryPer), healPer) * unit.heal));
+                $modal.find("#unitPt").text(Math.floor((lv - 1) * Math.pow(unit.setPt, 0.5) + unit.setPt));
+                var minExp = Math.floor(Math.pow(lv - 1, UnitParam.NextExpPer[unit.category - 1]) * unit.grow);
+                var maxExp = Math.floor(Math.pow(lv, UnitParam.NextExpPer[unit.category - 1]) * unit.grow);
+                if (lv == unit.lvMax) {
+                    $modal.find("#unitExp").text(minExp);
+                }
+                else {
+                    $modal.find("#unitExp").text(minExp + "~" + (maxExp - 1));
+                }
+                var skill = {
+                    party: unit.partySkill ? _.find(Data.skill.party, function (o) { return o.id == unit.partySkill[Math.floor(lv / 10)]; }) : null,
+                    active: unit.activeSkill ? _.find(Data.skill.active, function (o) { return o.id == unit.activeSkill[Math.floor(lv / 10)]; }) : null,
+                    panel: unit.panelSkill ? _.find(Data.skill.panel, function (o) { return o.id == unit.panelSkill[Math.floor(lv / 10)]; }) : null,
+                    limit: unit.limitSkill ? _.find(Data.skill.limit, function (o) { return o.id == unit.limitSkill[Math.floor(lv / 10)]; }) : null
+                };
+                if (skill.limit) {
+                    skill.limit.active = [
+                        _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_00; }),
+                        _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_01; }),
+                        _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_02; })
+                    ];
+                }
+                console.log(skill);
+                var skilltemplate = _.template($("#unitSkillTemplate").html());
+                $('#unitSkillListGroup').html(skilltemplate(skill));
             });
             slider.slider('setValue', unit.lvMax, false, true);
             $modal.find("img[data-id]").click(Unit.onEvolveUnitIconClick);
@@ -178,10 +226,10 @@ var Unit = {
         $modal.modal('show');
     },
     formatStory: function (story) {
-        return story.replace(/\\n/g, "<br/>").replace(/\[-\]/g, "</span>").replace(/\[([A-Za-z0-9]{6})\]/g, "<span style='color:#$1'>")
+        return this.formatRichText(story);
     },
     formatRichText: function (richText) {
-        return richText.replace(/\\n/g, "<br/>").replace(/\[-\]/g, "</span>").replace(/\[([A-Za-z0-9]{6})\]/g, "<span style='color:#$1'>")
+        return richText.replace(/(?:\r\n|\r|\n|\\n)/g, "<br/>").replace(/\[-\]/g, "</span>").replace(/\[([A-Za-z0-9]{6})\]/g, "<span style='color:#$1'>");
     },
     convertRarityToStar: function (rarity) {
         return "★".repeat(rarity);
@@ -194,7 +242,7 @@ function initRouter() {
             "unit": "unitRoute",
             "unit/id/:id": "unitDetailRoute",
             "unit/gid/:gid": "unitDetailByGIdRoute",
-            "unit/search": "unitSearchRoute",
+            "unit/search/:condition": "unitSearchRoute",
             '*path': 'defaultRoute'
         },
         defaultRoute: function () {
@@ -205,10 +253,11 @@ function initRouter() {
     app_router = new AppRouter;
 
     app_router.on('route:unitRoute', function (actions) {
+        console.log("route:unitRoute");
         Unit.doPage();
     });
     app_router.on('route:unitDetailRoute', function (id) {
-        var unit = _.find(UnitList, function (o) {
+        var unit = _.find(Data.unit, function (o) {
             return o.id == id;
         });
         if (!unit) {
@@ -220,7 +269,7 @@ function initRouter() {
         }
     });
     app_router.on('route:unitDetailByGIdRoute', function (gid) {
-        var unit = _.find(UnitList, function (o) {
+        var unit = _.find(Data.unit, function (o) {
             return o.gId == gid;
         });
         if (!unit) {
@@ -236,5 +285,9 @@ function initRouter() {
 }
 
 $(function () {
-    Unit.init(initRouter);
+    $.when(Unit.init("unit"), Unit.init("skill")).done(function () {
+        console.log("all data inited");
+        localStorage.setItem("lastUpdate", JSON.stringify(new Date()))
+        initRouter();
+    });
 });

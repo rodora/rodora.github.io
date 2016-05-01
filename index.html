@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>RTDDE.UnitSearch</title>
+    <title>RoDora UnitSearch</title>
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -38,6 +38,10 @@
             margin: 8px 10px;
         }
         
+        .icon-evolve {
+            cursor: pointer;
+        }
+        
         .panel-heading {
             cursor: pointer;
         }
@@ -47,6 +51,14 @@
             padding-right: 25px;
             width: 75px;
             float: left;
+            font-weight: bold;
+        }
+        
+        .skill-label {
+            padding-right: 25px;
+            width: 75px;
+            float: left;
+            font-weight: bold;
         }
         
         .pager-fixed-top {
@@ -81,18 +93,24 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-                <a class="navbar-brand" href="#">RTDDE.UnitSearch</a>
+                <a class="navbar-brand" href="#">RoDora UnitSearch<sup>α</sup></a>
+                <!--β-->
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Unit</a></li>
-                    <li class="disabled"><a href="#">Quest</a></li>
+                    <li class="active" class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span>Unit</span><span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li class="active"><a href="#">List</a></li>
+                            <li><a href="#">Search</a></li>
+                        </ul>
+                    </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#">About</a></li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span id="currentLang" /> <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span id="currentLang" /><span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="#">ja-JP</a></li>
                             <li><a href="#">zh-CHT</a></li>
@@ -105,19 +123,21 @@
             <!-- /.navbar-collapse -->
         </div>
     </nav>
-    <nav class="pager-fixed-top">
-        <ul class="pager">
-            <li><a href="javascript:Unit.doPage('<<<')"><span class="glyphicon glyphicon-menu-left"></span><span class="glyphicon glyphicon-menu-left"></span><span class="glyphicon glyphicon-menu-left"></span></a></li>
-            <li><a href="javascript:Unit.doPage('<')"><span class="glyphicon glyphicon-menu-left"></span></a></li>
-            <li><span id="pageInfo"></span></li>
-            <li><a href="javascript:Unit.doPage('>')"><span class="glyphicon glyphicon-menu-right"></span></a></li>
-            <li><a href="javascript:Unit.doPage('>>>')"><span class="glyphicon glyphicon-menu-right"></span><span class="glyphicon glyphicon-menu-right"></span><span class="glyphicon glyphicon-menu-right"></span></a></li>
+    <div id="unit-list">
+        <nav class="pager-fixed-top">
+            <ul class="pager">
+                <li><a href="javascript:Unit.doPage('<<<')"><span class="glyphicon glyphicon-menu-left"></span><span class="glyphicon glyphicon-menu-left"></span><span class="glyphicon glyphicon-menu-left"></span></a></li>
+                <li><a href="javascript:Unit.doPage('<')"><span class="glyphicon glyphicon-menu-left"></span></a></li>
+                <li><span id="pageInfo"></span></li>
+                <li><a href="javascript:Unit.doPage('>')"><span class="glyphicon glyphicon-menu-right"></span></a></li>
+                <li><a href="javascript:Unit.doPage('>>>')"><span class="glyphicon glyphicon-menu-right"></span><span class="glyphicon glyphicon-menu-right"></span><span class="glyphicon glyphicon-menu-right"></span></a></li>
+            </ul>
+        </nav>
+        <div class="top-background"></div>
+        <ul id='iconContainer'>
+            <li><img class='icon' src='/img/Icon/icon_locked.png'></li>
         </ul>
-    </nav>
-    <div class="top-background"></div>
-    <ul id='iconContainer'>
-        <li><img class='icon' src='/img/Icon/icon_locked.png'></li>
-    </ul>
+    </div>
 
 
     <script src="js/jquery-1.12.3.js"></script>
@@ -166,6 +186,14 @@
                                     <div class="status-label">Heal</div>
                                     <span id='unitHeal' />
                                 </div>
+                                <div>
+                                    <div class="status-label">Pt</div>
+                                    <span id='unitPt' />
+                                </div>
+                                <div>
+                                    <div class="status-label">Exp</div>
+                                    <span id='unitExp' />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -176,13 +204,13 @@
                                 <div id="collapseEvolve" class="panel-collapse collapse">
                                     <ul class="list-group">
                                         <% _.each(revData, function(o,i) {
-                                    var unit=_.find(UnitList,function(u){return u.id==o;});
+                                    var unit=_.find(Data.unit,function(u){return u.id==o;});
                                     if(!unit){return;}
                                      %>
                                             <li class="list-group-item">
                                                 <div class="media">
                                                     <div class="media-left">
-                                                        <img class="media-object" data-id="<%= unit.id %>" src='/img/Icon/I<%= unit.gId %>.png' />
+                                                        <img class="media-object icon-evolve" data-id="<%= unit.id %>" src='/img/Icon/I<%= unit.gId %>.png' />
                                                     </div>
                                                     <div class="media-body">
                                                         <div>
@@ -211,9 +239,8 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseSkill">Skill</div>
                                     <div id="collapseSkill" class="panel-collapse collapse in">
-                                        <ul class="list-group">
-                                            <li class="list-group-item">Cras justo odio</li>
-                                            <li class="list-group-item">Dapibus ac facilisis in</li>
+                                        <ul class="list-group" id="unitSkillListGroup">
+
                                         </ul>
                                     </div>
                                 </div>
@@ -268,4 +295,67 @@
             </div>
         </div>
     </div>
+</script>
+<script id="unitSkillTemplate" type="text/template">
+    <% if(party){ %>
+        <li class="list-group-item">
+            <div class="list-group-item-heading">
+                <div class="skill-label">Party</div>
+                <%= party.name %>
+            </div>
+            <p class="list-group-item-text">
+                <%= Unit.formatRichText(party.text) %>
+            </p>
+        </li>
+        <% } %>
+            <% if(active){ %>
+                <li class="list-group-item">
+                    <div class="list-group-item-heading">
+                        <div class="skill-label">Active</div>
+                        <%= active.name %>
+                            <span style="float:right">(Soul:<%= active.soul %>)</span>
+                    </div>
+                    <p class="list-group-item-text">
+                        <%= Unit.formatRichText(active.text) %>
+                    </p>
+                </li>
+                <% } %>
+                    <% if(panel){ %>
+                        <li class="list-group-item">
+                            <div class="list-group-item-heading">
+                                <div class="skill-label">Panel</div>
+                                <%= panel.name %>
+                            </div>
+                            <p class="list-group-item-text">
+                                <%= Unit.formatRichText(panel.text) %>
+                            </p>
+                        </li>
+                        <% } %>
+                            <% if(limit){ %>
+                                <li class="list-group-item">
+                                    <div class="list-group-item-heading">
+                                        <div class="skill-label">Limit</div>
+                                        <%= limit.name %>
+                                    </div>
+                                    <p class="list-group-item-text">
+                                        <%= Unit.formatRichText(limit.general_text) %>
+                                            <ul class="list-group">
+                                                <% _.each(limit.active,function(active,i){%>
+                                                    <li class="list-group-item">
+                                                        <div class="list-group-item-heading">
+                                                            <div class="skill-label">Level
+                                                                <%= limit["limit_pt_0"+i] %>
+                                                            </div>
+                                                            <%= active.name %>
+                                                                <span style="float:right">(Soul:<%= active.soul %>)</span>
+                                                        </div>
+                                                        <p class="list-group-item-text">
+                                                            <%= Unit.formatRichText(active.text) %>
+                                                        </p>
+                                                    </li>
+                                                    <% }); %>
+                                            </ul>
+                                    </p>
+                                </li>
+                                <% } %>
 </script>
