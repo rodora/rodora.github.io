@@ -10,7 +10,9 @@
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-select.min.css" rel="stylesheet">
     <link href="css/bootstrap-slider.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -19,66 +21,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <style>
-        body {
-            padding-top: 100px;
-        }
-        
-        #iconContainer {
-            padding: 0px 0 0 0;
-            text-align: center;
-        }
-        
-        #iconContainer li {
-            cursor: pointer;
-            list-style-type: none;
-            display: inline-block;
-        }
-        
-        .icon {
-            margin: 8px 10px;
-        }
-        
-        .icon-evolve {
-            cursor: pointer;
-        }
-        
-        .panel-heading {
-            cursor: pointer;
-        }
-        
-        .status-label {
-            text-align: right;
-            padding-right: 25px;
-            width: 75px;
-            float: left;
-            font-weight: bold;
-        }
-        
-        .skill-label {
-            padding-right: 25px;
-            width: 75px;
-            float: left;
-            font-weight: bold;
-        }
-        
-        .pager-fixed-top {
-            position: fixed;
-            width: 100%;
-            top: 50px;
-            z-index: 512;
-        }
-        
-        .pager-fixed-top .pager {
-            margin: 10px 0;
-        }
-        
-        .top-background {
-            position: fixed;
-            top: 0px;
-            width: 100%;
-            height: 125px;
-            background: linear-gradient(180deg, white, white 75px, transparent 100px, transparent);
-        }
+
     </style>
 </head>
 
@@ -99,11 +42,11 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="active" class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span>Unit</span><span class="caret"></span></a>
+                    <li id='unitMenu' class="active" class="dropdown">
+                        <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span>Unit</span><span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li class="active"><a href="#">List</a></li>
-                            <li><a href="#">Search</a></li>
+                            <li id="unitListMenuItem" class="active"><a href="#unit">List</a></li>
+                            <li id="unitSearchMenuItem"><a href="#unit/search/">Search</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -123,7 +66,7 @@
             <!-- /.navbar-collapse -->
         </div>
     </nav>
-    <div id="unit-list">
+    <div id="unitList" style="display:none">
         <nav class="pager-fixed-top">
             <ul class="pager">
                 <li><a href="javascript:Unit.doPage('<<<')"><span class="glyphicon glyphicon-menu-left"></span><span class="glyphicon glyphicon-menu-left"></span><span class="glyphicon glyphicon-menu-left"></span></a></li>
@@ -134,18 +77,117 @@
             </ul>
         </nav>
         <div class="top-background"></div>
-        <ul id='iconContainer'>
+        <ul id='iconContainer' class="icon-list">
             <li><img class='icon' src='/img/Icon/icon_locked.png'></li>
+        </ul>
+    </div>
+    <div id="unitSearch" style="display:none">
+        <div class="container">
+            <div class="row row-top-buffer">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                        <button class="btn btn-danger" type="button" id="btnClearSearch">Clear</button>
+                    </span>
+                        <input id="txtSearch" type="text" class="form-control" placeholder="Search for...">
+                        <span class="input-group-btn">
+                        <button class="btn btn-primary" type="button" id="btnSearch">Search</button>
+                    </span>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-top-buffer">
+                <div class="col-md-3 col-md-offset-2">
+                    <span>General:</span>
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-default active">    <input type="checkbox" autocomplete="off" checked>Name  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Story  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Cutin  </label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div id='searchResultCount' style="text-align:center"></div>
+                </div>
+                <div class="col-md-3" style="text-align:right">
+                    <label class="checkbox-inline"><input id="chkItemLimit" type="checkbox" checked="checked">Show only first 100 results.</label>
+                </div>
+            </div>
+            <div class="row row-top-buffer">
+                <div class="col-md-2 col-md-offset-2">
+                    <select class="selectpicker" title="Rarity" data-width="100%">
+                        <option title="Rarity" value="">All</option>
+  <option value="1">★</option>
+  <option value="2">★★</option>
+  <option value="3">★★★</option>
+  <option value="4">★★★★</option>
+  <option value="5">★★★★★</option>
+  <option value="6">★★★★★★</option>
+</select>
+                </div>
+                <div class="col-md-2">
+                    <select class="selectpicker" title="Class" data-width="100%">
+                        <option title="Class" value="">All</option>
+  <option value="1">KNIGHT</option>
+  <option value="2">LANCER</option>
+  <option value="3">ARCHER</option>
+  <option value="4">WIZARD</option>
+</select>
+                </div>
+                <div class="col-md-2">
+                    <select class="selectpicker" title="Attribute" data-width="100%">
+                        <option title="Attribute" value="">All</option>
+  <option value="1">NONE</option>
+  <option value="2">FIRE</option>
+  <option value="3">WATER</option>
+  <option value="4">LIGHT</option>
+  <option value="5">DARK</option>
+</select>
+                </div>
+                <div class="col-md-2">
+                    <select class="selectpicker" title="SubAttribute" data-width="100%">
+                        <option title="SubAttribute" value="">All</option>
+  <option value="1">NONE</option>
+  <option value="2">FIRE</option>
+  <option value="3">WATER</option>
+  <option value="4">LIGHT</option>
+  <option value="5">DARK</option>
+</select>
+                </div>
+            </div>
+            <div class="row row-top-buffer">
+                <div class="col-md-4 col-md-offset-2">
+                    <span>Skill(Name):</span>
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Party  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Active  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Panel  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Limit  </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <span>Skill(Text):</span>
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Party  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Active  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Panel  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Limit  </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ul id='searchResultContainer' class="icon-list">
         </ul>
     </div>
 
 
+    <script src="js/base64.min.js"></script>
     <script src="js/jquery-1.12.3.js"></script>
     <script src="js/jquery.unveil.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-select.min.js"></script>
     <script src="js/bootstrap-slider.min.js"></script>
     <script src="js/underscore.js"></script>
-    <script src="js/backbone.js"></script>
+    <script src="js/backbone-min.js"></script>
 
     <script src="js/main.js"></script>
 </body>
@@ -167,7 +209,7 @@
                 <div class='modal-body'>
                     <div class="media">
                         <div class="media-left">
-                            <img class="media-object" src='/img/Icon/I<%= gId %>.png' />
+                            <img class="media-object" data-src='/img/Icon/icon_locked.png' src='/img/Icon/I<%= gId %>.png' />
                         </div>
                         <div class="media-body">
                             <div>
@@ -210,7 +252,8 @@
                                             <li class="list-group-item">
                                                 <div class="media">
                                                     <div class="media-left">
-                                                        <img class="media-object icon-evolve" data-id="<%= unit.id %>" src='/img/Icon/I<%= unit.gId %>.png' />
+                                                        <img class="media-object icon-evolve" data-id="<%= unit.id %>" data-src='/img/Icon/icon_locked.png' src='/img/Icon/I<%= unit.gId %>.png'
+                                                        />
                                                     </div>
                                                     <div class="media-body">
                                                         <div>
@@ -240,7 +283,7 @@
                                     <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseSkill">Skill</div>
                                     <div id="collapseSkill" class="panel-collapse collapse in">
                                         <ul class="list-group" id="unitSkillListGroup">
-
+                                            <!--another template here-->
                                         </ul>
                                     </div>
                                 </div>
@@ -275,7 +318,7 @@
                                             <div class="panel-body">
                                                 <div class="media">
                                                     <div class="media-left">
-                                                        <img class="media-object" src='/img/AI/<%= accessory.icon %>.png' />
+                                                        <img class="media-object" data-src='/img/AI/Ac_bg.png' src='/img/AI/<%= accessory.icon %>.png' />
                                                     </div>
                                                     <div class="media-body">
                                                         <div>

@@ -1,0 +1,64 @@
+body {
+    padding-top: 100px;
+}
+
+.icon-list {
+    padding: 0px 0 0 0;
+    text-align: center;
+}
+
+.icon-list li {
+    cursor: pointer;
+    list-style-type: none;
+    display: inline-block;
+}
+
+.icon {
+    margin: 8px 10px;
+}
+
+.icon-evolve {
+    cursor: pointer;
+}
+
+.panel-heading {
+    cursor: pointer;
+}
+
+.status-label {
+    text-align: right;
+    padding-right: 25px;
+    width: 75px;
+    float: left;
+    font-weight: bold;
+}
+
+.skill-label {
+    padding-right: 25px;
+    width: 75px;
+    float: left;
+    font-weight: bold;
+}
+
+.pager-fixed-top {
+    position: fixed;
+    width: 100%;
+    top: 50px;
+    z-index: 512;
+}
+
+.pager-fixed-top .pager {
+    margin: 10px 0;
+}
+
+.top-background {
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    height: 125px;
+    background: linear-gradient(180deg, white, white 75px, transparent 100px, transparent);
+}
+
+.row-top-buffer {
+    margin-top: 20px;
+}

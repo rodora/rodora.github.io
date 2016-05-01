@@ -1,5 +1,6 @@
 var Data = {};
 var app_router;
+var activeMenu = "";
 var UnitParam = {
     CategoryPer: [
         0.38999998569488525,
@@ -82,9 +83,30 @@ var Unit = {
             return new Date(local).getTime() < new Date(remote).getTime();
         });
     },
-
+    setActiveMenu: function (mode) {
+        activeMenu = mode;
+        $("nav.navbar .active").removeClass('active');
+        $("#unitList").hide();
+        $("#unitSearch").hide();
+        switch (mode.toLowerCase()) {
+            case "unitlist":
+                {
+                    $('#unitMenu').addClass('active');
+                    $('#unitListMenuItem').addClass('active');
+                    $("#unitList").show();
+                    break;
+                }
+            case "unitsearch": {
+                $('#unitMenu').addClass('active');
+                $('#unitSearchMenuItem').addClass('active');
+                $("#unitSearch").show();
+                break;
+            }
+        }
+    },
     doPage: function (mode) {
         console.log("doPage");
+        this.setActiveMenu("unitList");
         var page = 1;
         if (localStorage["page"]) {
             page = JSON.parse(localStorage["page"]);
@@ -108,22 +130,20 @@ var Unit = {
         }
         localStorage["page"] = JSON.stringify(page);
         $("#pageInfo").text(page + "/" + maxPage);
-        this.renderIconList();
+        var unitpagelist = _.chain(Data.unit)
+            .filter(function (o) {
+                var i = parseInt(o.gId);
+                return (i <= page * 100) && (i > (page - 1) * 100);
+            })
+            .sortBy(function (o) { return o.gId; })
+            .value();
+        this.renderIconList('#iconContainer', unitpagelist);
     },
-
-    renderIconList: function () {
+    renderIconList: function (target, data) {
         console.log("renderIconList");
         var self = this;
-        var page = 1;
-        if (localStorage["page"]) {
-            page = JSON.parse(localStorage["page"]);
-        }
-        $('#iconContainer').empty();
-        var unitpagelist = _.filter(Data.unit, function (o) {
-            var i = parseInt(o.gId);
-            return (i <= page * 100) && (i > (page - 1) * 100);
-        });
-        $.each(unitpagelist, function (i, o) {
+        $(target).empty();
+        $.each(data, function (i, o) {
             if (o.gId == 0) {
                 return;
             }
@@ -136,11 +156,107 @@ var Unit = {
                 $(this).unbind("error").attr("src", "/img/Icon/icon_locked.png");
             });
             img.click(self.onUnitIconClick);
+            img.tooltip({
+                html: true,
+                placement: "top",
+                title: "No." + o.gId + "<br/>" + o.name
+            });
             var li = $("<li>");
             li.append(img);
-            $('#iconContainer').append(li);
+            $(target).append(li);
         });
-        $("img").unveil();
+        $(target).find("img").unveil();
+    },
+    doSearch: function (conditionJson) {
+        console.log("doSearch", conditionJson);
+        this.setActiveMenu("unitsearch");
+        if (!conditionJson) {
+            return;
+        }
+        if (conditionJson == "reset") {
+            $('#unitSearch #chkItemLimit').prop("checked", true);
+            $('#unitSearch #txtSearch').val("");
+            $("#unitSearch label.btn input").each(function (i, o) {
+                if (i == 0) {
+                    $(o).prop('checked', true);
+                    $(o).parent().addClass('active');
+                }
+                else {
+                    $(o).prop('checked', false);
+                    $(o).parent().removeClass('active');
+                }
+            });
+            $("#unitSearch .selectpicker").each(function (i, o) {
+                $(o).selectpicker('val', "");
+            });
+            app_router.navigate("unit/search/", { trigger: true });
+            return;
+        }
+        try {
+            var condition = JSON.parse(Base64.decode(conditionJson));
+            console.log(condition);
+            //set control
+            $('#unitSearch #chkItemLimit').prop("checked", condition.maxItem ? true : false);
+            $('#unitSearch #txtSearch').val(condition.text);
+            $("#unitSearch label.btn input").each(function (i, o) {
+                $(o).prop('checked', condition.range[i]);
+                condition.range[i] ?
+                    $(o).parent().addClass('active') :
+                    $(o).parent().removeClass('active');
+            });
+            $("#unitSearch .selectpicker").each(function (i, o) {
+                $(o).selectpicker('val', condition.select[i]);
+            });
+            //do real search            
+            var result = _.chain(Data.unit)
+                .filter(function (o) {
+                    var conditions = [
+                        condition.select[0] ? o.category == condition.select[0] : true,
+                        condition.select[1] ? o.style == condition.select[1] : true,
+                        condition.select[2] ? o.attribute == condition.select[2] : true,
+                        condition.select[3] ? o.subAttribute == condition.select[3] : true,
+                    ];
+                    return _.every(conditions, function (o) { return o; });
+                })
+                .filter(function (o) {
+                    var conditions = [
+                        condition.range[0] ? o.name.indexOf(condition.text) > -1 : false,
+                        condition.range[1] ? o.story.indexOf(condition.text) > -1 : false,
+                        condition.range[2] ? _.any(o.cutin, function (ci) { return ci.indexOf(condition.text) > -1; }) : false,
+
+                        condition.range[3] ? o.name.indexOf(condition.text) > -1 : false,
+                        condition.range[4] ? o.name.indexOf(condition.text) > -1 : false,
+                        condition.range[5] ? o.name.indexOf(condition.text) > -1 : false,
+                        condition.range[6] ? o.name.indexOf(condition.text) > -1 : false,
+
+                        condition.range[7] ? o.name.indexOf(condition.text) > -1 : false,
+                        condition.range[8] ? o.name.indexOf(condition.text) > -1 : false,
+                        condition.range[9] ? o.name.indexOf(condition.text) > -1 : false,
+                        condition.range[10] ? o.name.indexOf(condition.text) > -1 : false,
+                    ];
+                    return _.any(conditions, function (o) { return o; });
+                })
+                .sortBy(function (o) { return o.gId; });
+
+            $('#searchResultCount').text("Count:" + result.size());
+            Unit.renderIconList('#searchResultContainer', result.filter(function (o, i) { return condition.maxItem ? i < condition.maxItem : true; }).value());
+        } catch (error) {
+            console.log("search error", error);
+            app_router.navigate("unit/search/", { trigger: true });
+            return;
+        }
+    },
+    onSearchClick: function (event) {
+        console.log("onSearchClick");
+        var condition = {
+            maxItem: $('#unitSearch #chkItemLimit')[0].checked ? 100 : 0,
+            text: $('#unitSearch #txtSearch').val(),
+            range: _.map($("#unitSearch label.btn input"), function (o) { return o.checked }),
+            select: _.map($("#unitSearch .selectpicker"), function (o) { return $(o).selectpicker('val') }),
+        };
+        var json = Base64.encodeURI(JSON.stringify(condition));
+        console.log(json);
+        app_router.navigate("unit/search/" + json, { trigger: true });
     },
     onUnitIconClick: function (event) {
         console.log("onUnitIconClick");
@@ -161,6 +277,9 @@ var Unit = {
         var $modal = $(template(unit));
         $modal.on('show.bs.modal', function (e) {
             console.log("show");
+            $modal.find("img").error(function () {
+                $(this).unbind("error").attr("src", $(this).attr("data-src"));
+            });
         });
         $modal.on('shown.bs.modal', function (e) {
             console.log("shown");
@@ -168,7 +287,7 @@ var Unit = {
                 orientation: "vertical",
                 min: 1,
                 max: unit.lvMax,
-                value: 1,
+                value: unit.lvMax,
                 step: 1,
                 tooltip: 'always',
                 tooltip_position: 'left',
@@ -177,13 +296,13 @@ var Unit = {
                     return 'Lv ' + value;
                 }
             });
-            slider.change(function (e) {
+            var onSliderChange = function (e) {
                 var categoryPer = UnitParam.CategoryPer[unit.category - 1];
                 var num = (unit.style - 1) * 3;
                 var lifePer = UnitParam.StylePer[num];
                 var attackPer = UnitParam.StylePer[num + 1];
                 var healPer = UnitParam.StylePer[num + 2];
-                var lv = e.value.newValue;
+                var lv = e ? e.value.newValue : unit.lvMax;
                 $modal.find("#unitLife").text(Math.floor(Math.pow(Math.pow(lv, categoryPer), lifePer) * unit.life));
                 $modal.find("#unitAttack").text(Math.floor(Math.pow(Math.pow(lv, categoryPer), attackPer) * unit.attack));
                 $modal.find("#unitHeal").text(Math.floor(Math.pow(Math.pow(lv, categoryPer), healPer) * unit.heal));
@@ -212,8 +331,9 @@ var Unit = {
                 console.log(skill);
                 var skilltemplate = _.template($("#unitSkillTemplate").html());
                 $('#unitSkillListGroup').html(skilltemplate(skill));
-            });
-            slider.slider('setValue', unit.lvMax, false, true);
+            };
+            onSliderChange();   //init
+            slider.change(onSliderChange);
             $modal.find("img[data-id]").click(Unit.onEvolveUnitIconClick);
         });
         $modal.on('hide.bs.modal', function (e) {
@@ -242,7 +362,7 @@ function initRouter() {
             "unit": "unitRoute",
             "unit/id/:id": "unitDetailRoute",
             "unit/gid/:gid": "unitDetailByGIdRoute",
-            "unit/search/:condition": "unitSearchRoute",
+            "unit/search/*condition": "unitSearchRoute",
             '*path': 'defaultRoute'
         },
         defaultRoute: function () {
@@ -264,7 +384,7 @@ function initRouter() {
             Unit.doPage();
         }
         else {
-            Unit.doPage(Math.ceil(unit.gId / 100));
+            if (!activeMenu) { Unit.doPage(Math.ceil(unit.gId / 100)); }
             Unit.showDetail(unit);
         }
     });
@@ -276,12 +396,23 @@ function initRouter() {
             Unit.doPage();
         }
         else {
-            Unit.doPage(Math.ceil(unit.gId / 100));
+            if (!activeMenu) { Unit.doPage(Math.ceil(unit.gId / 100)); }
             Unit.showDetail(unit);
         }
     });
+    app_router.on('route:unitSearchRoute', function (condition) {
+        Unit.doSearch(condition);
+    });
 
     Backbone.history.start();
+}
+
+function initControls() {
+    $('#btnSearch').click(Unit.onSearchClick);
+    $('#btnClearSearch').click(function () {
+        app_router.navigate("unit/search/reset", { trigger: true });
+    });
+
 }
 
 $(function () {
@@ -289,5 +420,6 @@ $(function () {
         console.log("all data inited");
         localStorage.setItem("lastUpdate", JSON.stringify(new Date()))
         initRouter();
+        initControls();
     });
 });
