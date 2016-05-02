@@ -115,11 +115,11 @@ var Unit = {
     },
     isDataTooOld: function (lang) {
         var dtd = $.Deferred();
-        var key = lang ? "lastUpdate_" + lang : "lastUpdate";
+        var key = lang ? "lastUpdate." + lang : "lastUpdate";
         var lastUpdate = localStorage.getItem(key);
         if (!lastUpdate) {
-            dtd.resolve();
-            return dtd.promise(true);
+            dtd.resolve(true);
+            return dtd.promise();
         }
         var url = lang ? '/data/lang/' + lang + '/lastUpdate.json' : '/data/lastUpdate.json'
         return $.ajax({
