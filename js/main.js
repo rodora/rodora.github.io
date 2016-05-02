@@ -119,7 +119,7 @@ var Unit = {
         var lastUpdate = localStorage.getItem(key);
         if (!lastUpdate) {
             dtd.resolve();
-            return dtd.promise(false);
+            return dtd.promise(true);
         }
         var url = lang ? '/data/lang/' + lang + '/lastUpdate.json' : '/data/lastUpdate.json'
         return $.ajax({
