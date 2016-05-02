@@ -66,7 +66,7 @@ var Unit = {
                 })
                     .done(function (data) {
                         localStorage[key] = JSON.stringify(data);
-                        console.log("Get data from web. ", type);
+                        console.log("Get data from web. ", key);
                         if (lang) {
                             Data[lang] = Data[lang] || {};
                             Data[lang][type] = data;
@@ -472,17 +472,21 @@ function initControls() {
 }
 
 $(function () {
+    NProgress.start();
     $.when(Unit.init("unit"), Unit.init("skill"))
         .then(function () {
             console.log("base data inited");
+            NProgress.set(0.5);
             localStorage.setItem("lastUpdate", JSON.stringify(new Date()))
             var lang = Unit.getLang();
             $.when(Unit.init("unit", lang), Unit.init("skill", lang)).done(function () {
                 console.log("lang data inited");
+                NProgress.set(0.9);
                 localStorage.setItem("lastUpdate." + lang, JSON.stringify(new Date()))
                 Unit.applyLanguage(lang);
                 initRouter();
                 initControls();
+                NProgress.done();
             });
         });
 });
