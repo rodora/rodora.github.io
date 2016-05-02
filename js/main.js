@@ -214,13 +214,7 @@ var Unit = {
             li.append(img);
             $(target).append(li);
         });
-        $(target).find("img").unveil(0, function () {
-            NProgress.start();
-            $(this).load(function () {
-                this.style.opacity = 1;
-                NProgress.done();
-            })
-        });
+        $(target).find("img").unveil();
     },
     doSearch: function (conditionJson) {
         console.log("doSearch", conditionJson);
