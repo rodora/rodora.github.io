@@ -2,6 +2,11 @@ body {
     padding-top: 100px;
 }
 
+img {
+  opacity: 0;
+  transition: opacity .3s ease-in;
+} 
+
 .icon-list {
     padding: 0px 0 0 0;
     text-align: center;
