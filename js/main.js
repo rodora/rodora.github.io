@@ -41,7 +41,7 @@ var Unit = {
             return dtd.promise();
         }
         type = type.toLowerCase();
-        var key = lang ? type + '_' + lang : type;
+        var key = lang ? lang + "." + type : type;
         var self = this;
         return self.isDataTooOld(lang).then(function (force) {
             var json = localStorage.getItem(key);
@@ -479,7 +479,7 @@ $(function () {
             var lang = Unit.getLang();
             $.when(Unit.init("unit", lang), Unit.init("skill", lang)).done(function () {
                 console.log("lang data inited");
-                localStorage.setItem("lastUpdate_" + lang, JSON.stringify(new Date()))
+                localStorage.setItem("lastUpdate." + lang, JSON.stringify(new Date()))
                 Unit.applyLanguage(lang);
                 initRouter();
                 initControls();
