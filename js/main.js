@@ -34,47 +34,96 @@ var UnitParam = {
     ]
 };
 var Unit = {
-    init: function (type) {
+    init: function (type, lang) {
         var dtd = $.Deferred();
         if (!type) {
             dtd.reject();
             return dtd.promise();
         }
         type = type.toLowerCase();
+        var key = lang ? type + '_' + lang : type;
         var self = this;
-        return self.isDataTooOld().then(function (force) {
-            var json = localStorage.getItem(type);
+        return self.isDataTooOld(lang).then(function (force) {
+            var json = localStorage.getItem(key);
             if (json && !force) {
                 var data = JSON.parse(json);
-                console.log("Get data from cache. ", type);
-                Data[type] = data;
+                console.log("Get data from cache. ", key);
+                if (lang) {
+                    Data[lang] = Data[lang] || {};
+                    Data[lang][type] = data;
+                } else {
+                    Data[type] = data;
+                }
                 dtd.resolve();
                 return dtd.promise();
             }
             else {
+                var url = lang ? '/data/lang/' + lang + '/' + type + '.json' : '/data/' + type + '.json'
                 return $.ajax({
-                    url: '/data/' + type + '.json',
+                    url: url,
                     cache: false,
                     dataType: "json"
                 })
                     .done(function (data) {
-                        localStorage[type] = JSON.stringify(data);
+                        localStorage[key] = JSON.stringify(data);
                         console.log("Get data from web. ", type);
-                        Data[type] = data;
+                        if (lang) {
+                            Data[lang] = Data[lang] || {};
+                            Data[lang][type] = data;
+                        } else {
+                            Data[type] = data;
+                        }
                     });
             }
         });
     },
-
-    isDataTooOld: function () {
+    supportedLang: ['ja-JP', 'zh-TW', 'en-US', 'zh-CN'],
+    getLang: function () {
+        var lang = localStorage["lang"] || navigator.language || navigator.browserLanguage;
+        if (_.any(this.supportedLang, function (o) { return o == lang }) == false) {
+            lang = 'ja-JP';
+        }
+        localStorage["lang"] = lang;
+        $('#currentLang').text(lang);
+        return lang;
+    },
+    setLang: function (lang) {
+        localStorage["lang"] = lang;
+    },
+    applyLanguage: function (lang) {
+        console.log("applyLanguage");
+        _.each(Data.unit, function (o) {
+            var unitlang = _.find(Data[lang].unit, function (l) { return l.id == o.id; });
+            o.lang = unitlang;
+        });
+        _.each(Data.skill.party, function (o) {
+            var unitlang = _.find(Data[lang].skill.party, function (l) { return l.id == o.id; });
+            o.lang = unitlang;
+        });
+        _.each(Data.skill.active, function (o) {
+            var unitlang = _.find(Data[lang].skill.active, function (l) { return l.id == o.id; });
+            o.lang = unitlang;
+        });
+        _.each(Data.skill.panel, function (o) {
+            var unitlang = _.find(Data[lang].skill.panel, function (l) { return l.id == o.id; });
+            o.lang = unitlang;
+        });
+        _.each(Data.skill.limit, function (o) {
+            var unitlang = _.find(Data[lang].skill.limit, function (l) { return l.id == o.id; });
+            o.lang = unitlang;
+        });
+    },
+    isDataTooOld: function (lang) {
         var dtd = $.Deferred();
-        var lastUpdate = localStorage.getItem("lastUpdate");
+        var key = lang ? "lastUpdate_" + lang : "lastUpdate";
+        var lastUpdate = localStorage.getItem(key);
         if (!lastUpdate) {
             dtd.resolve();
             return dtd.promise(false);
         }
+        var url = lang ? '/data/lang/' + lang + '/lastUpdate.json' : '/data/lastUpdate.json'
         return $.ajax({
-            url: '/data/lastUpdate.json',
+            url: url,
             cache: false,
             dataType: "json"
         }).then(function (data) {
@@ -335,6 +384,7 @@ var Unit = {
             onSliderChange();   //init
             slider.change(onSliderChange);
             $modal.find("img[data-id]").click(Unit.onEvolveUnitIconClick);
+            $('[data-toggle="tooltip"]').tooltip();
         });
         $modal.on('hide.bs.modal', function (e) {
             app_router.navigate("unit");
@@ -363,6 +413,7 @@ function initRouter() {
             "unit/id/:id": "unitDetailRoute",
             "unit/gid/:gid": "unitDetailByGIdRoute",
             "unit/search/*condition": "unitSearchRoute",
+            "lang/:lang": "langChangeRoute",
             '*path': 'defaultRoute'
         },
         defaultRoute: function () {
@@ -403,6 +454,11 @@ function initRouter() {
     app_router.on('route:unitSearchRoute', function (condition) {
         Unit.doSearch(condition);
     });
+    app_router.on('route:langChangeRoute', function (lang) {
+        Unit.setLang(lang);
+        app_router.navigate("unit");
+        location.reload();
+    });
 
     Backbone.history.start();
 }
@@ -416,10 +472,17 @@ function initControls() {
 }
 
 $(function () {
-    $.when(Unit.init("unit"), Unit.init("skill")).done(function () {
-        console.log("all data inited");
-        localStorage.setItem("lastUpdate", JSON.stringify(new Date()))
-        initRouter();
-        initControls();
-    });
+    $.when(Unit.init("unit"), Unit.init("skill"))
+        .then(function () {
+            console.log("base data inited");
+            localStorage.setItem("lastUpdate", JSON.stringify(new Date()))
+            var lang = Unit.getLang();
+            $.when(Unit.init("unit", lang), Unit.init("skill", lang)).done(function () {
+                console.log("lang data inited");
+                localStorage.setItem("lastUpdate_" + lang, JSON.stringify(new Date()))
+                Unit.applyLanguage(lang);
+                initRouter();
+                initControls();
+            });
+        });
 });

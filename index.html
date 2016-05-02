@@ -53,12 +53,12 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#">About</a></li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span id="currentLang" /><span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span id="currentLang"></span><span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">ja-JP</a></li>
-                            <li><a href="#">zh-CHT</a></li>
-                            <li><a href="#">en-US</a></li>
-                            <li><a href="#">zh-CHS</a></li>
+                            <li><a href="#lang/ja-JP">ja-JP</a></li>
+                            <li><a href="#lang/zh-TW">zh-TW</a></li>
+                            <li><a href="#lang/en-US">en-US</a></li>
+                            <li><a href="#lang/zh-CN">zh-CN</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -89,7 +89,7 @@
                         <span class="input-group-btn">
                         <button class="btn btn-danger" type="button" id="btnClearSearch">Clear</button>
                     </span>
-                        <input id="txtSearch" type="text" class="form-control" placeholder="Search for...">
+                        <input id="txtSearch" type="text" class="form-control" placeholder="Search for...(Currently only support Japanese)">
                         <span class="input-group-btn">
                         <button class="btn btn-primary" type="button" id="btnSearch">Search</button>
                     </span>
@@ -158,19 +158,19 @@
                 <div class="col-md-4 col-md-offset-2">
                     <span>Skill(Name):</span>
                     <div class="btn-group" data-toggle="buttons">
-                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Party  </label>
-                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Active  </label>
-                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Panel  </label>
-                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Limit  </label>
+                        <label class="btn btn-default disabled">    <input type="checkbox" autocomplete="off">Party  </label>
+                        <label class="btn btn-default disabled">    <input type="checkbox" autocomplete="off">Active  </label>
+                        <label class="btn btn-default disabled">    <input type="checkbox" autocomplete="off">Panel  </label>
+                        <label class="btn btn-default disabled">    <input type="checkbox" autocomplete="off">Limit  </label>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <span>Skill(Text):</span>
                     <div class="btn-group" data-toggle="buttons">
-                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Party  </label>
-                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Active  </label>
-                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Panel  </label>
-                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Limit  </label>
+                        <label class="btn btn-default disabled">    <input type="checkbox" autocomplete="off">Party  </label>
+                        <label class="btn btn-default disabled">    <input type="checkbox" autocomplete="off">Active  </label>
+                        <label class="btn btn-default disabled">    <input type="checkbox" autocomplete="off">Panel  </label>
+                        <label class="btn btn-default disabled">    <input type="checkbox" autocomplete="off">Limit  </label>
                     </div>
                 </div>
             </div>
@@ -202,7 +202,7 @@
                     <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
                     <h4 class='modal-title' id='myModalLabel'>
                     <span style="padding-right:10px">No.<%= gId %></span>
-                    <span style="padding-right:10px"><%= name %></span>
+                    <span style="padding-right:10px" data-toggle="tooltip" title="<%= name %>"><%= lang?lang.name:name %></span>
                     <span><%= Unit.convertRarityToStar(category) %></span>
                 </h4>
                 </div>
@@ -258,7 +258,7 @@
                                                     <div class="media-body">
                                                         <div>
                                                             <span style="padding-right:10px">No.<%= unit.gId %></span>
-                                                            <span style="padding-right:10px"><%= unit.name %></span>
+                                                            <span style="padding-right:10px" data-toggle="tooltip" title="<%= unit.name %>"><%= unit.lang?unit.lang.name:unit.name %></span>
                                                             <span><%= Unit.convertRarityToStar(unit.category) %></span>
                                                         </div>
                                                         <div>
@@ -291,8 +291,8 @@
                                     <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseStory">Story</div>
                                     <div id="collapseStory" class="panel-collapse collapse">
                                         <div class="panel-body">
-                                            <div style="text-align:center;">
-                                                <%= Unit.formatStory(story)%>
+                                            <div style="text-align:center;" data-toggle="tooltip" data-html="true" title="<%= Unit.formatStory(story) %>">
+                                                <%= Unit.formatStory(lang?lang.story:story)%>
                                             </div>
                                         </div>
                                     </div>
@@ -302,11 +302,13 @@
                                     <div id="collapseCutin" class="panel-collapse collapse">
                                         <div class="panel-body">
                                             <div style="text-align:center;">
-                                                <% _.each(cutin, function(i) { %>
-                                                    <p>
-                                                        <%= i %>
-                                                    </p>
-                                                    <% }); %>
+                                                <% _.each(cutin, function(o,i) { %>
+                                                    <% if(o){ %>
+                                                        <p data-toggle="tooltip" title="<%= o %>">
+                                                            <%= lang&&lang.cutin[i]?lang.cutin[i]:o %>
+                                                        </p>
+                                                        <% } %>
+                                                            <% }); %>
                                             </div>
                                         </div>
                                     </div>
@@ -321,11 +323,11 @@
                                                         <img class="media-object" data-src='/img/AI/Ac_bg.png' src='/img/AI/<%= accessory.icon %>.png' />
                                                     </div>
                                                     <div class="media-body">
-                                                        <div>
-                                                            <%= accessory.name %>
-                                                        </div>
-                                                        <div>
-                                                            <%= Unit.formatRichText(accessory.detail) %>
+                                                        <span data-toggle="tooltip" title="<%= accessory.name %>">
+                                                            <%= lang&&lang.accessory?lang.accessory.name:accessory.name %>
+                                                        </span>
+                                                        <div data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(accessory.detail) %>">
+                                                            <%= Unit.formatRichText(lang&&lang.accessory?lang.accessory.detail:accessory.detail) %>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -344,10 +346,10 @@
         <li class="list-group-item">
             <div class="list-group-item-heading">
                 <div class="skill-label">Party</div>
-                <%= party.name %>
+                <span data-toggle="tooltip" title="<%= party.name %>"><%= party.lang?party.lang.name:party.name %></span>
             </div>
-            <p class="list-group-item-text">
-                <%= Unit.formatRichText(party.text) %>
+            <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(party.text) %>">
+                <%= Unit.formatRichText(party.lang?party.lang.text:party.text) %>
             </p>
         </li>
         <% } %>
@@ -355,11 +357,11 @@
                 <li class="list-group-item">
                     <div class="list-group-item-heading">
                         <div class="skill-label">Active</div>
-                        <%= active.name %>
-                            <span style="float:right">(Soul:<%= active.soul %>)</span>
+                        <span data-toggle="tooltip" title="<%= active.name %>"><%= active.lang?active.lang.name:active.name %></span>
+                        <span style="float:right">(Soul:<%= active.soul %>)</span>
                     </div>
-                    <p class="list-group-item-text">
-                        <%= Unit.formatRichText(active.text) %>
+                    <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(active.text) %>">
+                        <%= Unit.formatRichText(active.lang?active.lang.text:active.text) %>
                     </p>
                 </li>
                 <% } %>
@@ -367,10 +369,10 @@
                         <li class="list-group-item">
                             <div class="list-group-item-heading">
                                 <div class="skill-label">Panel</div>
-                                <%= panel.name %>
+                                <span data-toggle="tooltip" title="<%= panel.name %>"><%= panel.lang?panel.lang.name:panel.name %></span>
                             </div>
-                            <p class="list-group-item-text">
-                                <%= Unit.formatRichText(panel.text) %>
+                            <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(panel.text) %>">
+                                <%= Unit.formatRichText(panel.lang?panel.lang.text:panel.text) %>
                             </p>
                         </li>
                         <% } %>
@@ -378,10 +380,10 @@
                                 <li class="list-group-item">
                                     <div class="list-group-item-heading">
                                         <div class="skill-label">Limit</div>
-                                        <%= limit.name %>
+                                        <span data-toggle="tooltip" title="<%= party.name %>"><%= limit.lang?limit.lang.name:limit.name %></span>
                                     </div>
-                                    <p class="list-group-item-text">
-                                        <%= Unit.formatRichText(limit.general_text) %>
+                                    <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(limit.general_text) %>">
+                                        <%= Unit.formatRichText(limit.lang?limit.lang.general_text:limit.general_text) %>
                                             <ul class="list-group">
                                                 <% _.each(limit.active,function(active,i){%>
                                                     <li class="list-group-item">
@@ -389,11 +391,11 @@
                                                             <div class="skill-label">Level
                                                                 <%= limit["limit_pt_0"+i] %>
                                                             </div>
-                                                            <%= active.name %>
-                                                                <span style="float:right">(Soul:<%= active.soul %>)</span>
+                                                            <span data-toggle="tooltip" title="<%= active.name %>"><%= active.lang?active.lang.name:active.name %></span>
+                                                            <span style="float:right">(Soul:<%= active.soul %>)</span>
                                                         </div>
-                                                        <p class="list-group-item-text">
-                                                            <%= Unit.formatRichText(active.text) %>
+                                                        <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(active.text) %>">
+                                                            <%= Unit.formatRichText(active.lang?active.lang.text:active.text) %>
                                                         </p>
                                                     </li>
                                                     <% }); %>
