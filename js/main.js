@@ -443,7 +443,7 @@ var Unit = {
     },
     convertRarityToStar: function (rarity) {
         var star = "";
-        for (var index = 1; index < rarity; index++) {
+        for (var index = 0; index < rarity; index++) {
             star += "★";
         }
         return star;
@@ -458,7 +458,8 @@ function initRouter() {
             "unit/id/:id": "unitDetailRoute",
             "unit/gid/:gid": "unitDetailByGIdRoute",
             "unit/search/*condition": "unitSearchRoute",
-            "lang/:lang": "langChangeRoute",
+            "lang/:lang": "languageChangeRoute",
+            "lang/data/:lang": "dataLanguageChangeRoute",
             '*path': 'defaultRoute'
         },
         defaultRoute: function () {
@@ -499,7 +500,7 @@ function initRouter() {
     app_router.on('route:unitSearchRoute', function (condition) {
         Unit.doSearch(condition);
     });
-    app_router.on('route:langChangeRoute', function (lang) {
+    app_router.on('route:dataLanguageChangeRoute', function (lang) {
         Unit.setLang(lang);
         app_router.navigate("unit");
         location.reload();
