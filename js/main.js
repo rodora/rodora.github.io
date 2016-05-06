@@ -79,11 +79,11 @@ var Unit = {
     },
     supportedLang: ['ja-JP', 'zh-TW', 'en-US', 'zh-CN'],
     getLang: function () {
-        var lang = localStorage["lang"] || navigator.language || navigator.browserLanguage;
+        var lang = localStorage["datalang"] || navigator.language || navigator.browserLanguage;
         if (_.any(this.supportedLang, function (o) { return o == lang }) == false) {
             lang = 'ja-JP';
         }
-        localStorage["lang"] = lang;
+        localStorage["datalang"] = lang;
         $('#currentDataLang').text(lang);
         return lang;
     },
@@ -101,7 +101,7 @@ var Unit = {
                 localStorage.removeItem(key);
             });
         }    
-        localStorage["lang"] = lang;
+        localStorage["datalang"] = lang;
     },
     applyLanguage: function (lang) {
         console.log("applyLanguage");
@@ -369,7 +369,7 @@ var Unit = {
                 orientation: 'vertical',
                 range: {
                     'min': 1,
-                    'max': unit.lvMax + 0.0001  //min!=max
+                    'max': unit.lvMax == 1 ? 1.0001 : unit.lvMax
                 },
                 pips: {
                     mode: 'values',
@@ -379,7 +379,7 @@ var Unit = {
                 },
                 tooltips: {
                     to: function (value) {
-                        return 'Lv&nbsp;' + parseInt(value);
+                        return 'Lv&nbsp;' + Math.round(value);
                     },
                     from: function (value) {
                         return value.replace('Lv&nbsp;', '');
@@ -392,7 +392,7 @@ var Unit = {
                 var lifePer = UnitParam.StylePer[num];
                 var attackPer = UnitParam.StylePer[num + 1];
                 var healPer = UnitParam.StylePer[num + 2];
-                var lv = parseInt(e[0]);
+                var lv = Math.round(e[0]);
                 $modal.find("#unitLife").text(Math.floor(Math.pow(Math.pow(lv, categoryPer), lifePer) * unit.life));
                 $modal.find("#unitAttack").text(Math.floor(Math.pow(Math.pow(lv, categoryPer), attackPer) * unit.attack));
                 $modal.find("#unitHeal").text(Math.floor(Math.pow(Math.pow(lv, categoryPer), healPer) * unit.heal));
@@ -424,7 +424,8 @@ var Unit = {
             };
             slider.noUiSlider.on('update', onSliderChange);
             $modal.find("img[data-id]").click(Unit.onEvolveUnitIconClick);
-            $('[data-toggle="tooltip"]').tooltip();
+            $('[data-toggle="tooltip"]').tooltip();            
+            initUiLanguage();
         });
         $modal.on('hide.bs.modal', function (e) {
             app_router.navigate("unit");
@@ -500,6 +501,11 @@ function initRouter() {
     app_router.on('route:unitSearchRoute', function (condition) {
         Unit.doSearch(condition);
     });
+    app_router.on('route:languageChangeRoute', function (lang) {
+        Lang.set(lang);
+        app_router.navigate("unit");
+        location.reload();
+    });
     app_router.on('route:dataLanguageChangeRoute', function (lang) {
         Unit.setLang(lang);
         app_router.navigate("unit");
@@ -514,7 +520,16 @@ function initControls() {
     $('#btnClearSearch').click(function () {
         app_router.navigate("unit/search/reset", { trigger: true });
     });
+}
 
+function initUiLanguage() {
+    $('[data-lang]').each(function ()
+    {
+        var $this = $(this);
+        var key = $this.data("lang");
+        var value = Lang[key][Lang.get()]||Lang[key]["en-US"];
+        $this.text(value);
+    });
 }
 
 $(function () {
@@ -530,8 +545,12 @@ $(function () {
                 NProgress.set(0.9);
                 localStorage.setItem("lastUpdate." + lang, JSON.stringify(new Date()))
                 Unit.applyLanguage(lang);
+                NProgress.inc();
                 initRouter();
+                NProgress.inc();
                 initControls();
+                NProgress.inc();
+                initUiLanguage();
                 NProgress.done();
             });
         });

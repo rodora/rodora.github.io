@@ -44,16 +44,16 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li id="unitListMenuItem" class="active"><a href="#unit">List</a></li>
-                    <li id="unitSearchMenuItem"><a href="#unit/search/">Search</a></li>
-                    <li id="unitCategoryMenuItem"><a href="#unit/category/">Category</a></li>
+                    <li id="unitListMenuItem" class="active"><a href="#unit" data-lang="list">List</a></li>
+                    <li id="unitSearchMenuItem"><a href="#unit/search/" data-lang="search">Search</a></li>
+                    <li id="unitCategoryMenuItem"><a href="#unit/category/" data-lang="category">Category</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="https://github.com/rodora/rodora.github.io" target="_blank" data-lang="about">About</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <span>Data:</span>
-                            <span id="currentDataLang"></span>
+                            <span class='glyphicon glyphicon-globe' data-lang="ui">UI</span>
+                            <span id="currentLang"></span>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
@@ -61,6 +61,19 @@
                             <li><a href="#lang/zh-TW">zh-TW</a></li>
                             <li><a href="#lang/en-US">en-US</a></li>
                             <li><a href="#lang/zh-CN">zh-CN</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span data-lang="data">Data</span>
+                            <span id="currentDataLang"></span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#lang/data/ja-JP">ja-JP</a></li>
+                            <li><a href="#lang/data/zh-TW">zh-TW</a></li>
+                            <li><a href="#lang/data/en-US">en-US</a></li>
+                            <li><a href="#lang/data/zh-CN">zh-CN</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -192,6 +205,7 @@
     <script src="js/nprogress.js"></script>
     <script src="js/nouislider.min.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/lang.js"></script>
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -228,23 +242,23 @@
                                     <div id="unitLevel" style="height:200px;" />
                                 </div>
                                 <div>
-                                    <div class="status-label">Life</div>
+                                    <div class="status-label" data-lang="life">Life</div>
                                     <span id='unitLife' />
                                 </div>
                                 <div>
-                                    <div class="status-label">Attack</div>
+                                    <div class="status-label" data-lang="attack">Attack</div>
                                     <span id='unitAttack' />
                                 </div>
                                 <div>
-                                    <div class="status-label">Heal</div>
+                                    <div class="status-label" data-lang="heal">Heal</div>
                                     <span id='unitHeal' />
                                 </div>
                                 <div>
-                                    <div class="status-label">Pt</div>
+                                    <div class="status-label" data-lang="pt">Pt</div>
                                     <span id='unitPt' />
                                 </div>
                                 <div>
-                                    <div class="status-label">Exp</div>
+                                    <div class="status-label" data-lang="exp">Exp</div>
                                     <span id='unitExp' />
                                 </div>
                             </div>
@@ -253,7 +267,7 @@
                     <div class="panel-group" id="unitExtraInfo" role="tablist">
                         <% if(_.every(revData,function(o){return o==0;})==false){ %>
                             <div class="panel panel-default">
-                                <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseEvolve">Evolve</div>
+                                <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseEvolve" data-lang="evolve">Evolve</div>
                                 <div id="collapseEvolve" class="panel-collapse collapse">
                                     <ul class="list-group">
                                         <% _.each(revData, function(o,i) {
@@ -273,12 +287,12 @@
                                                             <span><%= Unit.convertRarityToStar(unit.category) %></span>
                                                         </div>
                                                         <div>
-                                                            Evolve:
+                                                            <span data-lang="evolvept">Evolve</span>:
                                                             <%= needPt %>pt
                                                         </div>
                                                         <% if(i>0){ %>
                                                             <div>
-                                                                Awakening:
+                                                                <span data-lang="awakening">Awakening</span>:
                                                                 <%= maxAttributeExp %>pt
                                                             </div>
                                                             <% } %>
@@ -291,7 +305,7 @@
                             </div>
                             <% } %>
                                 <div class="panel panel-default">
-                                    <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseSkill">Skill</div>
+                                    <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseSkill" data-lang="skill">Skill</div>
                                     <div id="collapseSkill" class="panel-collapse collapse in">
                                         <ul class="list-group" id="unitSkillListGroup">
                                             <!--another template here-->
@@ -299,7 +313,7 @@
                                     </div>
                                 </div>
                                 <div class="panel panel-default">
-                                    <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseStory">Story</div>
+                                    <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseStory" data-lang="story">Story</div>
                                     <div id="collapseStory" class="panel-collapse collapse">
                                         <div class="panel-body">
                                             <div style="text-align:center;" data-toggle="tooltip" data-html="true" title="<%= Unit.formatStory(story) %>">
@@ -309,7 +323,7 @@
                                     </div>
                                 </div>
                                 <div class="panel panel-default">
-                                    <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseCutin">Cutin</div>
+                                    <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseCutin" data-lang="cutin">Cutin</div>
                                     <div id="collapseCutin" class="panel-collapse collapse">
                                         <div class="panel-body">
                                             <div style="text-align:center;">
@@ -326,7 +340,7 @@
                                 </div>
                                 <% if(accessory){ %>
                                     <div class="panel panel-default">
-                                        <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseAccessory">Accessory</div>
+                                        <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseAccessory" data-lang="accessory">Accessory</div>
                                         <div id="collapseAccessory" class="panel-collapse collapse">
                                             <div class="panel-body">
                                                 <div class="media">
@@ -356,7 +370,7 @@
     <% if(party){ %>
         <li class="list-group-item">
             <div class="list-group-item-heading">
-                <div class="skill-label">Party</div>
+                <div class="skill-label" data-lang="party">Party</div>
                 <span data-toggle="tooltip" title="<%= party.name %>"><%= party.lang?party.lang.name:party.name %></span>
             </div>
             <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(party.text) %>">
@@ -367,9 +381,9 @@
             <% if(active){ %>
                 <li class="list-group-item">
                     <div class="list-group-item-heading">
-                        <div class="skill-label">Active</div>
+                        <div class="skill-label" data-lang="active">Active</div>
                         <span data-toggle="tooltip" title="<%= active.name %>"><%= active.lang?active.lang.name:active.name %></span>
-                        <span style="float:right">(Soul:<%= active.soul %>)</span>
+                        <span style="float:right">(<span data-lang="soul">Soul</span><%= active.soul %>)</span>
                     </div>
                     <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(active.text) %>">
                         <%= Unit.formatRichText(active.lang?active.lang.text:active.text) %>
@@ -379,7 +393,7 @@
                     <% if(panel){ %>
                         <li class="list-group-item">
                             <div class="list-group-item-heading">
-                                <div class="skill-label">Panel</div>
+                                <div class="skill-label" data-lang="panel">Panel</div>
                                 <span data-toggle="tooltip" title="<%= panel.name %>"><%= panel.lang?panel.lang.name:panel.name %></span>
                             </div>
                             <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(panel.text) %>">
@@ -390,7 +404,7 @@
                             <% if(limit){ %>
                                 <li class="list-group-item">
                                     <div class="list-group-item-heading">
-                                        <div class="skill-label">Limit</div>
+                                        <div class="skill-label" data-lang="limit">Limit</div>
                                         <span data-toggle="tooltip" title="<%= party.name %>"><%= limit.lang?limit.lang.name:limit.name %></span>
                                     </div>
                                     <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(limit.general_text) %>">
