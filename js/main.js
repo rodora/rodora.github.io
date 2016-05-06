@@ -332,7 +332,7 @@ var Unit = {
         });
         $modal.on('shown.bs.modal', function (e) {
             console.log("shown");
-            var slider = $modal.find('#unitLevel').slider({
+            /*var slider = $modal.find('#unitLevel').slider({
                 orientation: "vertical",
                 min: 1,
                 max: unit.lvMax,
@@ -344,6 +344,34 @@ var Unit = {
                 formatter: function (value) {
                     return 'Lv ' + value;
                 }
+            });*/
+            var slider = $modal.find('#unitLevel')[0];
+            noUiSlider.create(slider, {
+                animate: true,
+                animationDuration: 300,
+                start: unit.lvMax,
+                step: 1,
+                connect: 'lower',
+                direction: 'rtl',
+                orientation: 'vertical',
+                range: {
+                    'min': 1,
+                    'max': unit.lvMax + 0.0001  //min!=max
+                },
+                pips: {
+                    mode: 'values',
+                    values: [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 99],
+                    density: 3,
+                    stepped: true
+                },
+                tooltips: {
+                    to: function (value) {
+                        return 'Lv&nbsp;' + parseInt(value);
+                    },
+                    from: function (value) {
+                        return value.replace('Lv&nbsp;', '');
+                    }
+                }
             });
             var onSliderChange = function (e) {
                 var categoryPer = UnitParam.CategoryPer[unit.category - 1];
@@ -351,7 +379,7 @@ var Unit = {
                 var lifePer = UnitParam.StylePer[num];
                 var attackPer = UnitParam.StylePer[num + 1];
                 var healPer = UnitParam.StylePer[num + 2];
-                var lv = e ? e.value.newValue : unit.lvMax;
+                var lv = parseInt(e[0]);
                 $modal.find("#unitLife").text(Math.floor(Math.pow(Math.pow(lv, categoryPer), lifePer) * unit.life));
                 $modal.find("#unitAttack").text(Math.floor(Math.pow(Math.pow(lv, categoryPer), attackPer) * unit.attack));
                 $modal.find("#unitHeal").text(Math.floor(Math.pow(Math.pow(lv, categoryPer), healPer) * unit.heal));
@@ -377,12 +405,11 @@ var Unit = {
                         _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_02; })
                     ];
                 }
-                console.log(skill);
+                //console.log(skill);
                 var skilltemplate = _.template($("#unitSkillTemplate").html());
                 $('#unitSkillListGroup').html(skilltemplate(skill));
             };
-            onSliderChange();   //init
-            slider.change(onSliderChange);
+            slider.noUiSlider.on('update', onSliderChange);
             $modal.find("img[data-id]").click(Unit.onEvolveUnitIconClick);
             $('[data-toggle="tooltip"]').tooltip();
         });
@@ -402,7 +429,12 @@ var Unit = {
         return richText.replace(/(?:\r\n|\r|\n|\\n)/g, "<br/>").replace(/\[-\]/g, "</span>").replace(/\[([A-Za-z0-9]{6})\]/g, "<span style='color:#$1'>");
     },
     convertRarityToStar: function (rarity) {
-        return "★".repeat(rarity);
+        var star = "";
+        for (var index = 1; index < rarity; index++) {
+            star += "★";
+        }
+        return star;
+        //return "★".repeat(rarity);    //repeat is ES6 function
     }
 };
 

@@ -11,8 +11,10 @@
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-select.min.css" rel="stylesheet">
-    <link href="css/bootstrap-slider.min.css" rel="stylesheet">
     <link href="css/nprogress.css" rel="stylesheet">
+    <link href="css/nouislider.min.css" rel="stylesheet">
+    <link href="css/nouislider.pips.css" rel="stylesheet">
+    <link href="css/nouislider.tooltips.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -52,7 +54,7 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">About</a></li>
+                    <li><a href="https://github.com/rodora/rodora.github.io" target="_blank">About</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span id="currentLang"></span><span class="caret"></span></a>
                         <ul class="dropdown-menu">
@@ -186,11 +188,10 @@
     <script src="js/jquery.unveil.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/bootstrap-select.min.js"></script>
-    <script src="js/bootstrap-slider.min.js"></script>
     <script src="js/underscore-min.js"></script>
     <script src="js/backbone-min.js"></script>
     <script src="js/nprogress.js"></script>
-
+    <script src="js/nouislider.min.js"></script>
     <script src="js/main.js"></script>
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -224,9 +225,9 @@
                             <img class="media-object" data-src='/img/Icon/icon_locked.png' src='/img/Icon/I<%= gId %>.png' />
                         </div>
                         <div class="media-body">
-                            <div>
-                                <div style="float:right;padding:20px;">
-                                    <input id="unitLevel" type="text" />
+                            <div style="padding-top:5px">
+                                <div style="float:right;padding:15px 60px 20px 0;">
+                                    <div id="unitLevel" style="height:200px;"/>
                                 </div>
                                 <div>
                                     <div class="status-label">Life</div>

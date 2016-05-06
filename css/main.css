@@ -62,3 +62,7 @@ body {
 .row-top-buffer {
     margin-top: 20px;
 }
+
+.noUi-connect{
+    background: #337ab7;
+}
