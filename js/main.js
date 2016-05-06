@@ -84,10 +84,23 @@ var Unit = {
             lang = 'ja-JP';
         }
         localStorage["lang"] = lang;
-        $('#currentLang').text(lang);
+        $('#currentDataLang').text(lang);
         return lang;
     },
     setLang: function (lang) {
+        var delKeys = [];
+        for (var i = 0; i < localStorage.length; i++) {
+            key = localStorage.key(i);
+            if (_.any(Unit.supportedLang, function (o) { return key.startsWith(o); })) {
+                delKeys.push(key);
+                console.log(key);
+            }
+        }
+        if (delKeys.length > 4) {
+            _.each(delKeys, function (key) {
+                localStorage.removeItem(key);
+            });
+        }    
         localStorage["lang"] = lang;
     },
     applyLanguage: function (lang) {
