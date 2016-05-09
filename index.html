@@ -57,23 +57,23 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#lang/ja-JP">ja-JP</a></li>
-                            <li><a href="#lang/zh-TW">zh-TW</a></li>
-                            <li><a href="#lang/en-US">en-US</a></li>
-                            <li><a href="#lang/zh-CN">zh-CN</a></li>
+                            <li><a href="#lang/ja-JP">日本語</a></li>
+                            <li><a href="#lang/zh-TW">正體中文</a></li>
+                            <li><a href="#lang/en-US">English</a></li>
+                            <li><a href="#lang/zh-CN">简体中文</a></li>
                         </ul>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <span data-lang="data">Data</span>
+                            <span class='glyphicon glyphicon-file' data-lang="data">Data</span>
                             <span id="currentDataLang"></span>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#lang/data/ja-JP">ja-JP</a></li>
-                            <li><a href="#lang/data/zh-TW">zh-TW</a></li>
-                            <li><a href="#lang/data/en-US">en-US</a></li>
-                            <li><a href="#lang/data/zh-CN">zh-CN</a></li>
+                            <li><a href="#lang/data/ja-JP">日本語</a></li>
+                            <li><a href="#lang/data/zh-TW">正體中文</a></li>
+                            <li><a href="#lang/data/en-US">English</a></li>
+                            <li><a href="#lang/data/zh-CN">简体中文</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -287,12 +287,12 @@
                                                             <span><%= Unit.convertRarityToStar(unit.category) %></span>
                                                         </div>
                                                         <div>
-                                                            <span data-lang="evolvept">Evolve</span>:
+                                                            <div class='evolve-label' data-lang="evolvept">Evolve</div>
                                                             <%= needPt %>pt
                                                         </div>
                                                         <% if(i>0){ %>
                                                             <div>
-                                                                <span data-lang="awakening">Awakening</span>:
+                                                                <div class='evolve-label' data-lang="awakening">Awakening</div>
                                                                 <%= maxAttributeExp %>pt
                                                             </div>
                                                             <% } %>
@@ -383,7 +383,8 @@
                     <div class="list-group-item-heading">
                         <div class="skill-label" data-lang="active">Active</div>
                         <span data-toggle="tooltip" title="<%= active.name %>"><%= active.lang?active.lang.name:active.name %></span>
-                        <span style="float:right">(<span data-lang="soul">Soul</span><%= active.soul %>)</span>
+                        <span style="float:right">(<span data-lang="soul">Soul</span>
+                        <%= active.soul %>)</span>
                     </div>
                     <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(active.text) %>">
                         <%= Unit.formatRichText(active.lang?active.lang.text:active.text) %>

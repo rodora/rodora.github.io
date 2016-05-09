@@ -77,14 +77,32 @@ var Unit = {
             }
         });
     },
-    supportedLang: ['ja-JP', 'zh-TW', 'en-US', 'zh-CN'],
+    supportedLang: [
+        {
+            key: 'ja-JP',
+            text: '日本語'
+        },
+        {
+            key: 'zh-TW',
+            text: '正體中文'
+        },
+        {
+            key: 'en-US',
+            text: 'English'
+        },
+        {
+            key: 'zh-CN',
+            text: '简体中文'
+        }],
     getLang: function () {
         var lang = localStorage["datalang"] || navigator.language || navigator.browserLanguage;
-        if (_.any(this.supportedLang, function (o) { return o == lang }) == false) {
+        if (_.any(this.supportedLang, function (o) { return o.key == lang }) == false) {
             lang = 'ja-JP';
         }
         localStorage["datalang"] = lang;
-        $('#currentDataLang').text(lang);
+        $('#currentDataLang').text(_.find(this.supportedLang, function (o) {
+            return o.key == lang;
+        }).text);
         return lang;
     },
     setLang: function (lang) {
@@ -421,6 +439,7 @@ var Unit = {
                 //console.log(skill);
                 var skilltemplate = _.template($("#unitSkillTemplate").html());
                 $('#unitSkillListGroup').html(skilltemplate(skill));
+                initUiLanguage();
             };
             slider.noUiSlider.on('update', onSliderChange);
             $modal.find("img[data-id]").click(Unit.onEvolveUnitIconClick);

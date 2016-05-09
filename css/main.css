@@ -33,9 +33,16 @@ body {
     font-weight: bold;
 }
 
+.evolve-label {
+    padding-right: 25px;
+    width: 125px;
+    float: left;
+    font-weight: bold;
+}
+
 .skill-label {
     padding-right: 25px;
-    width: 100px;
+    width: 150px;
     float: left;
     font-weight: bold;
 }
