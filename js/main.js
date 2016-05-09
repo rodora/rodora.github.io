@@ -273,7 +273,7 @@ var Unit = {
             return;
         }
         try {
-            var condition = JSON.parse(Base64.decode(conditionJson));
+            var condition = JSON.parse(LZString.decompressFromEncodedURIComponent(conditionJson));
             console.log(condition);
             //set control
             $('#unitSearch #chkItemLimit').prop("checked", condition.maxItem ? true : false);
@@ -296,13 +296,13 @@ var Unit = {
             //do real search            
             var result = _.chain(Data.unit)
                 .filter(function (o) {
-                    var conditions = [
+                    var isInType = [
                         condition.select[0] ? o.category == condition.select[0] : true,
                         condition.select[1] ? o.style == condition.select[1] : true,
                         condition.select[2] ? o.attribute == condition.select[2] : true,
                         condition.select[3] ? o.subAttribute == condition.select[3] : true,
                     ];
-                    return _.every(conditions, function (o) { return o; });
+                    return _.every(isInType, function (o) { return o; });
                 })
                 .filter(function (o) {
                     var hasText = [];
@@ -340,10 +340,11 @@ var Unit = {
             range: {
                 language: _.map($("#unitSearch #searchRangeLanguage label.btn input"), function (o) { return o.checked }),
                 general: _.map($("#unitSearch #searchRangeGeneral label.btn input"), function (o) { return o.checked }),
+                accessory: _.map($("#unitSearch #searchRangeAccessory label.btn input"), function (o) { return o.checked }),
             },
             select: _.map($("#unitSearch .selectpicker"), function (o) { return $(o).selectpicker('val') }),
         };
-        var json = Base64.encodeURI(JSON.stringify(condition));
+        var json = LZString.compressToEncodedURIComponent(JSON.stringify(condition));
         console.log(json);
         app_router.navigate("unit/search/" + json, { trigger: true });
     },
