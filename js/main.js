@@ -118,7 +118,7 @@ var Unit = {
             _.each(delKeys, function (key) {
                 localStorage.removeItem(key);
             });
-        }    
+        }
         localStorage["datalang"] = lang;
     },
     applyLanguage: function (lang) {
@@ -278,9 +278,15 @@ var Unit = {
             //set control
             $('#unitSearch #chkItemLimit').prop("checked", condition.maxItem ? true : false);
             $('#unitSearch #txtSearch').val(condition.text);
-            $("#unitSearch label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range[i]);
-                condition.range[i] ?
+            $("#unitSearch #searchRangeLanguage label.btn input").each(function (i, o) {
+                $(o).prop('checked', condition.range.language[i]);
+                condition.range.language[i] ?
+                    $(o).parent().addClass('active') :
+                    $(o).parent().removeClass('active');
+            });
+            $("#unitSearch #searchRangeGeneral label.btn input").each(function (i, o) {
+                $(o).prop('checked', condition.range.general[i]);
+                condition.range.general[i] ?
                     $(o).parent().addClass('active') :
                     $(o).parent().removeClass('active');
             });
@@ -299,26 +305,26 @@ var Unit = {
                     return _.every(conditions, function (o) { return o; });
                 })
                 .filter(function (o) {
-                    var conditions = [
-                        condition.range[0] ? o.name.indexOf(condition.text) > -1 : false,
-                        condition.range[1] ? o.story.indexOf(condition.text) > -1 : false,
-                        condition.range[2] ? _.any(o.cutin, function (ci) { return ci.indexOf(condition.text) > -1; }) : false,
-
-                        condition.range[3] ? o.name.indexOf(condition.text) > -1 : false,
-                        condition.range[4] ? o.name.indexOf(condition.text) > -1 : false,
-                        condition.range[5] ? o.name.indexOf(condition.text) > -1 : false,
-                        condition.range[6] ? o.name.indexOf(condition.text) > -1 : false,
-
-                        condition.range[7] ? o.name.indexOf(condition.text) > -1 : false,
-                        condition.range[8] ? o.name.indexOf(condition.text) > -1 : false,
-                        condition.range[9] ? o.name.indexOf(condition.text) > -1 : false,
-                        condition.range[10] ? o.name.indexOf(condition.text) > -1 : false,
-                    ];
-                    return _.any(conditions, function (o) { return o; });
+                    var hasText = [];
+                    if (condition.range.language[0]) {
+                        hasText = hasText.concat([
+                            condition.range.general[0] ? o.name.indexOf(condition.text) > -1 : false,
+                            condition.range.general[1] ? o.story.indexOf(condition.text) > -1 : false,
+                            condition.range.general[2] ? _.any(o.cutin, function (ci) { return ci.indexOf(condition.text) > -1; }) : false,
+                        ]);
+                    }
+                    if (condition.range.language[1] && o.lang) {
+                        hasText = hasText.concat([
+                            condition.range.general[0] ? o.lang.name.indexOf(condition.text) > -1 : false,
+                            condition.range.general[1] ? o.lang.story.indexOf(condition.text) > -1 : false,
+                            condition.range.general[2] ? _.any(o.lang.cutin, function (ci) { return ci.indexOf(condition.text) > -1; }) : false,
+                        ]);
+                    }
+                    return _.any(hasText, function (o) { return o; });
                 })
                 .sortBy(function (o) { return o.gId; });
 
-            $('#searchResultCount').text("Count:" + result.size());
+            $('#searchResultCount').text("Count:" + result.size().value());
             Unit.renderIconList('#searchResultContainer', result.filter(function (o, i) { return condition.maxItem ? i < condition.maxItem : true; }).value());
         } catch (error) {
             console.log("search error", error);
@@ -331,7 +337,10 @@ var Unit = {
         var condition = {
             maxItem: $('#unitSearch #chkItemLimit')[0].checked ? 100 : 0,
             text: $('#unitSearch #txtSearch').val(),
-            range: _.map($("#unitSearch label.btn input"), function (o) { return o.checked }),
+            range: {
+                language: _.map($("#unitSearch #searchRangeLanguage label.btn input"), function (o) { return o.checked }),
+                general: _.map($("#unitSearch #searchRangeGeneral label.btn input"), function (o) { return o.checked }),
+            },
             select: _.map($("#unitSearch .selectpicker"), function (o) { return $(o).selectpicker('val') }),
         };
         var json = Base64.encodeURI(JSON.stringify(condition));
@@ -363,19 +372,6 @@ var Unit = {
         });
         $modal.on('shown.bs.modal', function (e) {
             console.log("shown");
-            /*var slider = $modal.find('#unitLevel').slider({
-                orientation: "vertical",
-                min: 1,
-                max: unit.lvMax,
-                value: unit.lvMax,
-                step: 1,
-                tooltip: 'always',
-                tooltip_position: 'left',
-                reversed: true,
-                formatter: function (value) {
-                    return 'Lv ' + value;
-                }
-            });*/
             var slider = $modal.find('#unitLevel')[0];
             noUiSlider.create(slider, {
                 animate: true,
@@ -436,14 +432,13 @@ var Unit = {
                         _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_02; })
                     ];
                 }
-                //console.log(skill);
                 var skilltemplate = _.template($("#unitSkillTemplate").html());
                 $('#unitSkillListGroup').html(skilltemplate(skill));
                 initUiLanguage();
             };
             slider.noUiSlider.on('update', onSliderChange);
             $modal.find("img[data-id]").click(Unit.onEvolveUnitIconClick);
-            $('[data-toggle="tooltip"]').tooltip();            
+            $('[data-toggle="tooltip"]').tooltip();
             initUiLanguage();
         });
         $modal.on('hide.bs.modal', function (e) {
@@ -542,11 +537,10 @@ function initControls() {
 }
 
 function initUiLanguage() {
-    $('[data-lang]').each(function ()
-    {
+    $('[data-lang]').each(function () {
         var $this = $(this);
         var key = $this.data("lang");
-        var value = Lang[key][Lang.get()]||Lang[key]["en-US"];
+        var value = Lang[key][Lang.get()] || Lang[key]["en-US"];
         $this.text(value);
     });
 }
