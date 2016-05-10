@@ -112,46 +112,22 @@
                 </div>
             </div>
             <div class="row row-top-buffer">
-                <div class="col-md-4 col-md-offset-2">
+                <div class="col-md-3 col-md-offset-2">
                     <div>
-                        <label class="checkbox-inline"><input id="chkItemLimit" type="checkbox" checked="checked">Show only first 100 results.</label>
+                        <div>Data</div>
+                        <div class="btn-group" id="searchRangeLanguage" data-toggle="buttons">
+                            <label class="btn btn-default active">    <input type="checkbox" autocomplete="off" checked>Original  </label>
+                            <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Current Language </label>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div>
-                        <div class="btn-group" id="searchRangeLanguage" data-toggle="buttons">
-                            <label class="btn btn-default active">    <input type="checkbox" autocomplete="off" checked>Base Data  </label>
-                            <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Current Language Data </label>
-                        </div>
+                <div class="col-md-5">
+                    <div style="text-align:right;">
+                        <label class="checkbox-inline"><input id="chkItemLimit" type="checkbox" checked="checked">Show only first 100 results.</label>
                     </div>
                 </div>
             </div>
             <div class="row row-top-buffer">
-                <div class="col-md-4 col-md-offset-2">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">General</div>
-                        <div class="panel-body">
-                            <div class="btn-group" id="searchRangeGeneral" data-toggle="buttons">
-                                <label class="btn btn-default active">    <input type="checkbox" autocomplete="off" checked>Name  </label>
-                                <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Story  </label>
-                                <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Cutin  </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Accessory</div>
-                        <div class="panel-body">
-                            <div class="btn-group" id="searchRangeAccessory" data-toggle="buttons">
-                                <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Name  </label>
-                                <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Text  </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
                 <div class="col-md-2 col-md-offset-2">
                     <select class="selectpicker" title="Rarity" data-width="100%">
                         <option title="Rarity" value="">All</option>
@@ -194,82 +170,82 @@
                 </div>
             </div>
             <div class="row row-top-buffer">
-                <div class="col-md-2 col-md-offset-2">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Party Skill</div>
-                        <div class="panel-body">
-                            <div class="btn-group" id="searchRangeSkillParty" data-toggle="buttons">
-                                <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Name  </label>
-                                <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Text  </label>
-                            </div>
-                        </div>
+                <div class="col-md-4 col-md-offset-2">
+                    <div>General</div>
+                    <div class="btn-group" id="searchRangeGeneral" data-toggle="buttons">
+                        <label class="btn btn-default active">    <input type="checkbox" autocomplete="off" checked>Name  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Story  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Cutin  </label>
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Active Skill</div>
-                        <div class="panel-body">
-                            <div class="btn-group" id="searchRangeSkillActive" data-toggle="buttons">
-                                <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Name  </label>
-                                <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Text  </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Panel Skill</div>
-                        <div class="panel-body">
-                            <div class="btn-group" id="searchRangeSkillPanel" data-toggle="buttons">
-                                <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Name  </label>
-                                <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Text  </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Limit Skill</div>
-                        <div class="panel-body">
-                            <div class="btn-group" id="searchRangeSkillLimit" data-toggle="buttons">
-                                <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Name  </label>
-                                <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Text  </label>
-                            </div>
-                        </div>
+                    <div>Accessory</div>
+                    <div class="btn-group" id="searchRangeAccessory" data-toggle="buttons">
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Name  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Text  </label>
                     </div>
                 </div>
             </div>
             <div class="row row-top-buffer">
-                <div class="col-md-2  col-md-offset-5">
+                <div class="col-md-2 col-md-offset-2">
+                    <div>Party Skill</div>
+                    <div class="btn-group" id="searchRangeSkillParty" data-toggle="buttons">
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Name  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Text  </label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div>Active Skill</div>
+                    <div class="btn-group" id="searchRangeSkillActive" data-toggle="buttons">
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Name  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Text  </label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div>Panel Skill</div>
+                    <div class="btn-group" id="searchRangeSkillPanel" data-toggle="buttons">
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Name  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Text  </label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div>Limit Skill</div>
+                    <div class="btn-group" id="searchRangeSkillLimit" data-toggle="buttons">
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Name  </label>
+                        <label class="btn btn-default">    <input type="checkbox" autocomplete="off">Text  </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-top-buffer">
+                <div class="col-md-2 col-md-offset-5">
                     <div id='searchResultCount' style="text-align:center"></div>
                 </div>
             </div>
+            <ul id='searchResultContainer' class="icon-list">
+            </ul>
         </div>
-        <ul id='searchResultContainer' class="icon-list">
-        </ul>
-    </div>
 
 
-    <script src="js/lz-string.min.js"></script>
-    <script src="js/jquery-1.12.3.min.js"></script>
-    <script src="js/jquery.unveil.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/bootstrap-select.min.js"></script>
-    <script src="js/underscore-min.js"></script>
-    <script src="js/backbone-min.js"></script>
-    <script src="js/nprogress.js"></script>
-    <script src="js/nouislider.min.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/lang.js"></script>
-    <script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        <script src="js/lz-string.min.js"></script>
+        <script src="js/jquery-1.12.3.min.js"></script>
+        <script src="js/jquery.unveil.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/bootstrap-select.min.js"></script>
+        <script src="js/underscore-min.js"></script>
+        <script src="js/backbone-min.js"></script>
+        <script src="js/nprogress.js"></script>
+        <script src="js/nouislider.min.js"></script>
+        <script src="js/main.js"></script>
+        <script src="js/lang.js"></script>
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
   ga('create', 'UA-77205096-1', 'auto');
   ga('send', 'pageview');
-    </script>
+        </script>
 </body>
 
 </html>

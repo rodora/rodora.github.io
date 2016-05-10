@@ -239,7 +239,7 @@ var Unit = {
             img.tooltip({
                 html: true,
                 placement: "top",
-                title: "No." + o.gId + "<br/>" + o.name
+                title: "No." + o.gId + "<br/>" + (o.lang ? o.lang.name : o.name)
             });
             var li = $("<li>");
             li.append(img);
@@ -290,6 +290,36 @@ var Unit = {
                     $(o).parent().addClass('active') :
                     $(o).parent().removeClass('active');
             });
+            $("#unitSearch #searchRangeAccessory label.btn input").each(function (i, o) {
+                $(o).prop('checked', condition.range.accessory[i]);
+                condition.range.accessory[i] ?
+                    $(o).parent().addClass('active') :
+                    $(o).parent().removeClass('active');
+            });
+            $("#unitSearch #searchRangeSkillParty label.btn input").each(function (i, o) {
+                $(o).prop('checked', condition.range.skill.party[i]);
+                condition.range.skill.party[i] ?
+                    $(o).parent().addClass('active') :
+                    $(o).parent().removeClass('active');
+            });
+            $("#unitSearch #searchRangeSkillActive label.btn input").each(function (i, o) {
+                $(o).prop('checked', condition.range.skill.active[i]);
+                condition.range.skill.active[i] ?
+                    $(o).parent().addClass('active') :
+                    $(o).parent().removeClass('active');
+            });
+            $("#unitSearch #searchRangeSkillPanel label.btn input").each(function (i, o) {
+                $(o).prop('checked', condition.range.skill.panel[i]);
+                condition.range.skill.panel[i] ?
+                    $(o).parent().addClass('active') :
+                    $(o).parent().removeClass('active');
+            });
+            $("#unitSearch #searchRangeSkillLimit label.btn input").each(function (i, o) {
+                $(o).prop('checked', condition.range.skill.limit[i]);
+                condition.range.skill.limit[i] ?
+                    $(o).parent().addClass('active') :
+                    $(o).parent().removeClass('active');
+            });
             $("#unitSearch .selectpicker").each(function (i, o) {
                 $(o).selectpicker('val', condition.select[i]);
             });
@@ -306,12 +336,43 @@ var Unit = {
                 })
                 .filter(function (o) {
                     var hasText = [];
+                    var skill = Unit.getSkillByUnit(o);
                     if (condition.range.language[0]) {
                         hasText = hasText.concat([
                             condition.range.general[0] ? o.name.indexOf(condition.text) > -1 : false,
                             condition.range.general[1] ? o.story.indexOf(condition.text) > -1 : false,
                             condition.range.general[2] ? _.any(o.cutin, function (ci) { return ci.indexOf(condition.text) > -1; }) : false,
                         ]);
+                        if (o.accessory) {
+                            hasText = hasText.concat([
+                                condition.range.accessory[0] ? o.accessory.name.indexOf(condition.text) > -1 : false,
+                                condition.range.accessory[1] ? o.accessory.detail.indexOf(condition.text) > -1 : false,
+                            ]);
+                        }
+                        if (skill.party) {
+                            hasText = hasText.concat([
+                                condition.range.skill.party[0] ? skill.party.name.indexOf(condition.text) > -1 : false,
+                                condition.range.skill.party[1] ? skill.party.text.indexOf(condition.text) > -1 : false,
+                            ]);
+                        }
+                        if (skill.active) {
+                            hasText = hasText.concat([
+                                condition.range.skill.active[0] ? skill.active.name.indexOf(condition.text) > -1 : false,
+                                condition.range.skill.active[1] ? skill.active.text.indexOf(condition.text) > -1 : false,
+                            ]);
+                        }
+                        if (skill.panel) {
+                            hasText = hasText.concat([
+                                condition.range.skill.panel[0] ? skill.panel.name.indexOf(condition.text) > -1 : false,
+                                condition.range.skill.panel[1] ? skill.panel.text.indexOf(condition.text) > -1 : false,
+                            ]);
+                        }
+                        if (skill.limit) {
+                            hasText = hasText.concat([
+                                condition.range.skill.limit[0] ? skill.limit.name.indexOf(condition.text) > -1 : false,
+                                condition.range.skill.limit[1] ? skill.limit.general_text.indexOf(condition.text) > -1 : false,
+                            ]);
+                        }
                     }
                     if (condition.range.language[1] && o.lang) {
                         hasText = hasText.concat([
@@ -319,11 +380,40 @@ var Unit = {
                             condition.range.general[1] ? o.lang.story.indexOf(condition.text) > -1 : false,
                             condition.range.general[2] ? _.any(o.lang.cutin, function (ci) { return ci.indexOf(condition.text) > -1; }) : false,
                         ]);
+                        if (o.lang.accessory) {
+                            hasText = hasText.concat([
+                                condition.range.accessory[0] ? o.lang.accessory.name.indexOf(condition.text) > -1 : false,
+                                condition.range.accessory[1] ? o.lang.accessory.detail.indexOf(condition.text) > -1 : false,
+                            ]);
+                        }
+                        if (skill.party && skill.party.lang) {
+                            hasText = hasText.concat([
+                                condition.range.skill.party[0] ? skill.party.lang.name.indexOf(condition.text) > -1 : false,
+                                condition.range.skill.party[1] ? skill.party.lang.text.indexOf(condition.text) > -1 : false,
+                            ]);
+                        }
+                        if (skill.active && skill.active.lang) {
+                            hasText = hasText.concat([
+                                condition.range.skill.active[0] ? skill.active.lang.name.indexOf(condition.text) > -1 : false,
+                                condition.range.skill.active[1] ? skill.active.lang.text.indexOf(condition.text) > -1 : false,
+                            ]);
+                        }
+                        if (skill.panel && skill.panel.lang) {
+                            hasText = hasText.concat([
+                                condition.range.skill.panel[0] ? skill.panel.lang.name.indexOf(condition.text) > -1 : false,
+                                condition.range.skill.panel[1] ? skill.panel.lang.text.indexOf(condition.text) > -1 : false,
+                            ]);
+                        }
+                        if (skill.limit && skill.limit.lang) {
+                            hasText = hasText.concat([
+                                condition.range.skill.limit[0] ? skill.limit.lang.name.indexOf(condition.text) > -1 : false,
+                                condition.range.skill.limit[1] ? skill.limit.lang.general_text.indexOf(condition.text) > -1 : false,
+                            ]);
+                        }
                     }
                     return _.any(hasText, function (o) { return o; });
                 })
                 .sortBy(function (o) { return o.gId; });
-
             $('#searchResultCount').text("Count:" + result.size().value());
             Unit.renderIconList('#searchResultContainer', result.filter(function (o, i) { return condition.maxItem ? i < condition.maxItem : true; }).value());
         } catch (error) {
@@ -341,6 +431,12 @@ var Unit = {
                 language: _.map($("#unitSearch #searchRangeLanguage label.btn input"), function (o) { return o.checked }),
                 general: _.map($("#unitSearch #searchRangeGeneral label.btn input"), function (o) { return o.checked }),
                 accessory: _.map($("#unitSearch #searchRangeAccessory label.btn input"), function (o) { return o.checked }),
+                skill: {
+                    party: _.map($("#unitSearch #searchRangeSkillParty label.btn input"), function (o) { return o.checked }),
+                    active: _.map($("#unitSearch #searchRangeSkillActive label.btn input"), function (o) { return o.checked }),
+                    panel: _.map($("#unitSearch #searchRangeSkillPanel label.btn input"), function (o) { return o.checked }),
+                    limit: _.map($("#unitSearch #searchRangeSkillLimit label.btn input"), function (o) { return o.checked }),
+                }
             },
             select: _.map($("#unitSearch .selectpicker"), function (o) { return $(o).selectpicker('val') }),
         };
@@ -420,19 +516,7 @@ var Unit = {
                 else {
                     $modal.find("#unitExp").text(minExp + "~" + (maxExp - 1));
                 }
-                var skill = {
-                    party: unit.partySkill ? _.find(Data.skill.party, function (o) { return o.id == unit.partySkill[Math.floor(lv / 10)]; }) : null,
-                    active: unit.activeSkill ? _.find(Data.skill.active, function (o) { return o.id == unit.activeSkill[Math.floor(lv / 10)]; }) : null,
-                    panel: unit.panelSkill ? _.find(Data.skill.panel, function (o) { return o.id == unit.panelSkill[Math.floor(lv / 10)]; }) : null,
-                    limit: unit.limitSkill ? _.find(Data.skill.limit, function (o) { return o.id == unit.limitSkill[Math.floor(lv / 10)]; }) : null
-                };
-                if (skill.limit) {
-                    skill.limit.active = [
-                        _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_00; }),
-                        _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_01; }),
-                        _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_02; })
-                    ];
-                }
+                var skill = Unit.getSkillByUnit(unit, lv);
                 var skilltemplate = _.template($("#unitSkillTemplate").html());
                 $('#unitSkillListGroup').html(skilltemplate(skill));
                 initUiLanguage();
@@ -450,6 +534,25 @@ var Unit = {
             $(this).remove();
         });
         $modal.modal('show');
+    },
+    getSkillByUnit: function (unit, lv) {
+        if (!lv) {
+            lv = unit.lvMax;
+        }
+        var skill = {
+            party: unit.partySkill ? _.find(Data.skill.party, function (o) { return o.id == unit.partySkill[Math.floor(lv / 10)]; }) : null,
+            active: unit.activeSkill ? _.find(Data.skill.active, function (o) { return o.id == unit.activeSkill[Math.floor(lv / 10)]; }) : null,
+            panel: unit.panelSkill ? _.find(Data.skill.panel, function (o) { return o.id == unit.panelSkill[Math.floor(lv / 10)]; }) : null,
+            limit: unit.limitSkill ? _.find(Data.skill.limit, function (o) { return o.id == unit.limitSkill[Math.floor(lv / 10)]; }) : null
+        };
+        if (skill.limit) {
+            skill.limit.active = [
+                _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_00; }),
+                _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_01; }),
+                _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_02; })
+            ];
+        }
+        return skill;
     },
     formatStory: function (story) {
         return this.formatRichText(story);
