@@ -2,7 +2,7 @@
 
 An online unit searcher for RoDora.
 
-All unit data && image rights belong to Acquire.
+All unit data && image rights belong to ACQUIRE.
 
 ### Todo 
 
@@ -10,14 +10,26 @@ All unit data && image rights belong to Acquire.
 
 Developer:
 
->  
+> WindWT
 
-Translation(Order by publish date of RoDora):
+Translation(Order by date):
+
+- UI:
+
+> WindWT、窓付き、櫻花抄
+
 - ja-JP:
->  
+
+> ACQUIRE 
+
 - zh-TW:
->  
+
+> Joymobee、 
+
 - en-US:
->  
+
+> ACQUIRE、 
+
 - zh-CN:
+
 >  
