@@ -6,6 +6,12 @@ All unit data && image rights belong to ACQUIRE.
 
 ### Todo 
 
+- 100% UI translation
+
+- 100% zh-TW && zh-CN translation
+
+- full-size unit image in detail view 
+
 ### Contributer
 
 Developer:
