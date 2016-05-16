@@ -6,11 +6,12 @@ All unit data && image rights belong to ACQUIRE.
 
 ### Todo 
 
-- 100% UI translation
-
+- 100% UI translation (Search still not translated)
 - 100% zh-TW && zh-CN translation
-
-- full-size unit image in detail view 
+- Everyday gacha list WITH ICON
+- Full-size unit image in detail view 
+- Leave alpha
+- Konami code
 
 ### Contributer
 
@@ -22,19 +23,19 @@ Translation(Order by date):
 
 - UI:
 
-> WindWT、窓付き、櫻花抄
+> ACQUIRE;WindWT;窓付き;櫻花抄;
 
 - ja-JP:
 
-> ACQUIRE 
+> ACQUIRE; 
 
 - zh-TW:
 
-> Joymobee、 
+> Joymobee; 
 
 - en-US:
 
-> ACQUIRE、 
+> ACQUIRE; 
 
 - zh-CN:
 
