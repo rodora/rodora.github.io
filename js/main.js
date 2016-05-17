@@ -579,7 +579,7 @@ var Unit = {
                 }
                 var skill = Unit.getSkillByUnit(unit, lv);
                 var skilltemplate = _.template($("#unitSkillTemplate").html());
-                $('#unitSkillListGroup').html(skilltemplate(skill));
+                $('#unitSkillPanel').replaceWith(skilltemplate(skill));
                 initUiLanguage();
             };
             slider.noUiSlider.on('update', onSliderChange);

@@ -237,7 +237,7 @@
         </div>
     </div>
     <div id="unitCategory" style="display:none">
-        
+
     </div>
 
     <script src="js/lz-string.min.js"></script>
@@ -358,15 +358,7 @@
                                 </div>
                             </div>
                             <% } %>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseSkill" data-lang="skill">Skill
-                                    </div>
-                                    <div id="collapseSkill" class="panel-collapse collapse in">
-                                        <ul class="list-group" id="unitSkillListGroup">
-                                            <!--another template here-->
-                                        </ul>
-                                    </div>
-                                </div>
+                                <div id="unitSkillPanel" class="panel panel-default" style="display:none"></div>
                                 <div class="panel panel-default">
                                     <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseStory" data-lang="story">Story
                                     </div>
@@ -427,71 +419,81 @@
     </div>
 </script>
 <script id="unitSkillTemplate" type="text/template">
-    <% if(party){ %>
-        <li class="list-group-item">
-            <div class="list-group-item-heading">
-                <div class="skill-label" data-lang="party">Party</div>
-                <span data-toggle="tooltip" title="<%= party.name %>"><%= party.lang?party.lang.name:party.name %></span>
-            </div>
-            <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(party.text) %>">
-                <%= Unit.formatRichText(party.lang?party.lang.text:party.text) %>
-            </p>
-        </li>
+    <div id="unitSkillPanel" class="panel panel-default" <% if(!(party||active||panel||limit)){ %>style="display:none"
         <% } %>
-            <% if(active){ %>
-                <li class="list-group-item">
-                    <div class="list-group-item-heading">
-                        <div class="skill-label" data-lang="active">Active</div>
-                        <span data-toggle="tooltip" title="<%= active.name %>"><%= active.lang?active.lang.name:active.name %></span>
-                        <div style="float:right">
-                            <span data-lang="soul">Soul</span>
-                            <span style="font-weight:bold"><%= active.soul %></span>
-                        </div>
-                    </div>
-                    <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(active.text) %>">
-                        <%= Unit.formatRichText(active.lang?active.lang.text:active.text) %>
-                    </p>
-                </li>
-                <% } %>
-                    <% if(panel){ %>
+            >
+            <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseSkill" data-lang="skill">Skill
+            </div>
+            <div id="collapseSkill" class="panel-collapse collapse in">
+                <ul class="list-group" id="unitSkillListGroup">
+                    <% if(party){ %>
                         <li class="list-group-item">
                             <div class="list-group-item-heading">
-                                <div class="skill-label" data-lang="panel">Panel</div>
-                                <span data-toggle="tooltip" title="<%= panel.name %>"><%= panel.lang?panel.lang.name:panel.name %></span>
+                                <div class="skill-label" data-lang="party">Party</div>
+                                <span data-toggle="tooltip" title="<%= party.name %>"><%= party.lang?party.lang.name:party.name %></span>
                             </div>
-                            <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(panel.text) %>">
-                                <%= Unit.formatRichText(panel.lang?panel.lang.text:panel.text) %>
+                            <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(party.text) %>">
+                                <%= Unit.formatRichText(party.lang?party.lang.text:party.text) %>
                             </p>
                         </li>
                         <% } %>
-                            <% if(limit){ %>
+                            <% if(active){ %>
                                 <li class="list-group-item">
                                     <div class="list-group-item-heading">
-                                        <div class="skill-label" data-lang="limit">Limit</div>
-                                        <span data-toggle="tooltip" title="<%= party.name %>"><%= limit.lang?limit.lang.name:limit.name %></span>
+                                        <div class="skill-label" data-lang="active">Active</div>
+                                        <span data-toggle="tooltip" title="<%= active.name %>"><%= active.lang?active.lang.name:active.name %></span>
+                                        <div style="float:right">
+                                            <span data-lang="soul">Soul</span>
+                                            <span style="font-weight:bold"><%= active.soul %></span>
+                                        </div>
                                     </div>
-                                    <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(limit.general_text) %>">
-                                        <%= Unit.formatRichText(limit.lang?limit.lang.general_text:limit.general_text) %>
-                                            <ul class="list-group">
-                                                <% _.each(limit.active,function(active,i){%>
-                                                    <li class="list-group-item">
-                                                        <div class="list-group-item-heading">
-                                                            <div class="skill-label">Level
-                                                                <%= limit["limit_pt_0"+i] %>
-                                                            </div>
-                                                            <span data-toggle="tooltip" title="<%= active.name %>"><%= active.lang?active.lang.name:active.name %></span>
-                                                            <div style="float:right">
-                                                                <span data-lang="soul">Soul</span>
-                                                                <span style="font-weight:bold"><%= active.soul %></span>
-                                                            </div>
-                                                        </div>
-                                                        <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(active.text) %>">
-                                                            <%= Unit.formatRichText(active.lang?active.lang.text:active.text) %>
-                                                        </p>
-                                                    </li>
-                                                    <% }); %>
-                                            </ul>
+                                    <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(active.text) %>">
+                                        <%= Unit.formatRichText(active.lang?active.lang.text:active.text) %>
                                     </p>
                                 </li>
                                 <% } %>
+                                    <% if(panel){ %>
+                                        <li class="list-group-item">
+                                            <div class="list-group-item-heading">
+                                                <div class="skill-label" data-lang="panel">Panel</div>
+                                                <span data-toggle="tooltip" title="<%= panel.name %>"><%= panel.lang?panel.lang.name:panel.name %></span>
+                                            </div>
+                                            <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(panel.text) %>">
+                                                <%= Unit.formatRichText(panel.lang?panel.lang.text:panel.text) %>
+                                            </p>
+                                        </li>
+                                        <% } %>
+                                            <% if(limit){ %>
+                                                <li class="list-group-item">
+                                                    <div class="list-group-item-heading">
+                                                        <div class="skill-label" data-lang="limit">Limit</div>
+                                                        <span data-toggle="tooltip" title="<%= party.name %>"><%= limit.lang?limit.lang.name:limit.name %></span>
+                                                    </div>
+                                                    <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(limit.general_text) %>">
+                                                        <%= Unit.formatRichText(limit.lang?limit.lang.general_text:limit.general_text) %>
+                                                            <ul class="list-group">
+                                                                <% _.each(limit.active,function(active,i){%>
+                                                                    <li class="list-group-item">
+                                                                        <div class="list-group-item-heading">
+                                                                            <div class="skill-label">Level
+                                                                                <%= limit["limit_pt_0"+i] %>
+                                                                            </div>
+                                                                            <span data-toggle="tooltip" title="<%= active.name %>"><%= active.lang?active.lang.name:active.name %></span>
+                                                                            <div style="float:right">
+                                                                                <span data-lang="soul">Soul</span>
+                                                                                <span style="font-weight:bold"><%= active.soul %></span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(active.text) %>">
+                                                                            <%= Unit.formatRichText(active.lang?active.lang.text:active.text) %>
+                                                                        </p>
+                                                                    </li>
+                                                                    <% }); %>
+                                                            </ul>
+                                                    </p>
+                                                </li>
+                                                <% } %>
+                </ul>
+            </div>
+    </div>
 </script>
