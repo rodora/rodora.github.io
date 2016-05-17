@@ -252,6 +252,7 @@ var Unit = {
     renderIconList: function (target, data) {
         console.log("renderIconList");
         var self = this;
+        $(target).find("img").attr('src','');   //stop image loading when doPage
         $(target).empty();
         $.each(data, function (i, o) {
             if (o.gId == 0) {
