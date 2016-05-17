@@ -180,21 +180,24 @@ var Unit = {
     setActiveMenu: function (mode) {
         activeMenu = mode;
         $("nav.navbar .active").removeClass('active');
-        $("#unitList").hide();
-        $("#unitSearch").hide();
+        $("body>div").hide();
         switch (mode.toLowerCase()) {
             case "unitlist":
                 {
-                    $('#unitMenu').addClass('active');
                     $('#unitListMenuItem').addClass('active');
                     $("#unitList").show();
                     break;
                 }
             case "unitsearch":
                 {
-                    $('#unitMenu').addClass('active');
                     $('#unitSearchMenuItem').addClass('active');
                     $("#unitSearch").show();
+                    break;
+                }
+            case "unitcategory":
+                {
+                    $('#unitCategoryMenuItem').addClass('active');
+                    $("#unitCategory").show();
                     break;
                 }
         }
