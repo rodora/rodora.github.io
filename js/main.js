@@ -96,7 +96,9 @@ var Unit = {
         }],
     getLang: function () {
         var lang = localStorage["datalang"] || navigator.language || navigator.browserLanguage;
-        if (_.any(this.supportedLang, function (o) { return o.key == lang }) == false) {
+        if (_.any(this.supportedLang, function (o) {
+            return o.key == lang
+        }) == false) {
             lang = 'ja-JP';
         }
         localStorage["datalang"] = lang;
@@ -109,7 +111,9 @@ var Unit = {
         var delKeys = [];
         for (var i = 0; i < localStorage.length; i++) {
             key = localStorage.key(i);
-            if (_.any(Unit.supportedLang, function (o) { return key.startsWith(o); })) {
+            if (_.any(Unit.supportedLang, function (o) {
+                return key.startsWith(o);
+            })) {
                 delKeys.push(key);
                 console.log(key);
             }
@@ -124,23 +128,33 @@ var Unit = {
     applyLanguage: function (lang) {
         console.log("applyLanguage");
         _.each(Data.unit, function (o) {
-            var unitlang = _.find(Data[lang].unit, function (l) { return l.id == o.id; });
+            var unitlang = _.find(Data[lang].unit, function (l) {
+                return l.id == o.id;
+            });
             o.lang = unitlang;
         });
         _.each(Data.skill.party, function (o) {
-            var unitlang = _.find(Data[lang].skill.party, function (l) { return l.id == o.id; });
+            var unitlang = _.find(Data[lang].skill.party, function (l) {
+                return l.id == o.id;
+            });
             o.lang = unitlang;
         });
         _.each(Data.skill.active, function (o) {
-            var unitlang = _.find(Data[lang].skill.active, function (l) { return l.id == o.id; });
+            var unitlang = _.find(Data[lang].skill.active, function (l) {
+                return l.id == o.id;
+            });
             o.lang = unitlang;
         });
         _.each(Data.skill.panel, function (o) {
-            var unitlang = _.find(Data[lang].skill.panel, function (l) { return l.id == o.id; });
+            var unitlang = _.find(Data[lang].skill.panel, function (l) {
+                return l.id == o.id;
+            });
             o.lang = unitlang;
         });
         _.each(Data.skill.limit, function (o) {
-            var unitlang = _.find(Data[lang].skill.limit, function (l) { return l.id == o.id; });
+            var unitlang = _.find(Data[lang].skill.limit, function (l) {
+                return l.id == o.id;
+            });
             o.lang = unitlang;
         });
     },
@@ -176,12 +190,13 @@ var Unit = {
                     $("#unitList").show();
                     break;
                 }
-            case "unitsearch": {
-                $('#unitMenu').addClass('active');
-                $('#unitSearchMenuItem').addClass('active');
-                $("#unitSearch").show();
-                break;
-            }
+            case "unitsearch":
+                {
+                    $('#unitMenu').addClass('active');
+                    $('#unitSearchMenuItem').addClass('active');
+                    $("#unitSearch").show();
+                    break;
+                }
         }
     },
     doPage: function (mode) {
@@ -191,13 +206,23 @@ var Unit = {
         if (localStorage["page"]) {
             page = JSON.parse(localStorage["page"]);
         }
-        var maxUnit = _.max(Data.unit, function (o) { return parseInt(o.gId); });
+        var maxUnit = _.max(Data.unit, function (o) {
+            return parseInt(o.gId);
+        });
         var maxPage = Math.ceil(parseInt(maxUnit.gId) / 100);
         switch (mode) {
-            case "<<<": page = 1; break;
-            case "<": page -= 1; break;
-            case ">": page += 1; break;
-            case ">>>": page = maxPage; break;
+            case "<<<":
+                page = 1;
+                break;
+            case "<":
+                page -= 1;
+                break;
+            case ">":
+                page += 1;
+                break;
+            case ">>>":
+                page = maxPage;
+                break;
         }
         if ($.isNumeric(mode)) {
             page = mode;
@@ -215,7 +240,9 @@ var Unit = {
                 var i = parseInt(o.gId);
                 return (i <= page * 100) && (i > (page - 1) * 100);
             })
-            .sortBy(function (o) { return o.gId; })
+            .sortBy(function (o) {
+                return o.gId;
+            })
             .value();
         this.renderIconList('#iconContainer', unitpagelist);
     },
@@ -332,7 +359,9 @@ var Unit = {
                         condition.select[2] ? o.attribute == condition.select[2] : true,
                         condition.select[3] ? o.subAttribute == condition.select[3] : true,
                     ];
-                    return _.every(isInType, function (o) { return o; });
+                    return _.every(isInType, function (o) {
+                        return o;
+                    });
                 })
                 .filter(function (o) {
                     var hasText = [];
@@ -341,7 +370,9 @@ var Unit = {
                         hasText = hasText.concat([
                             condition.range.general[0] ? o.name.indexOf(condition.text) > -1 : false,
                             condition.range.general[1] ? o.story.indexOf(condition.text) > -1 : false,
-                            condition.range.general[2] ? _.any(o.cutin, function (ci) { return ci.indexOf(condition.text) > -1; }) : false,
+                            condition.range.general[2] ? _.any(o.cutin, function (ci) {
+                                return ci.indexOf(condition.text) > -1;
+                            }) : false,
                         ]);
                         if (o.accessory) {
                             hasText = hasText.concat([
@@ -378,7 +409,9 @@ var Unit = {
                         hasText = hasText.concat([
                             condition.range.general[0] ? o.lang.name.indexOf(condition.text) > -1 : false,
                             condition.range.general[1] ? o.lang.story.indexOf(condition.text) > -1 : false,
-                            condition.range.general[2] ? _.any(o.lang.cutin, function (ci) { return ci.indexOf(condition.text) > -1; }) : false,
+                            condition.range.general[2] ? _.any(o.lang.cutin, function (ci) {
+                                return ci.indexOf(condition.text) > -1;
+                            }) : false,
                         ]);
                         if (o.lang.accessory) {
                             hasText = hasText.concat([
@@ -411,11 +444,17 @@ var Unit = {
                             ]);
                         }
                     }
-                    return _.any(hasText, function (o) { return o; });
+                    return _.any(hasText, function (o) {
+                        return o;
+                    });
                 })
-                .sortBy(function (o) { return o.gId; });
+                .sortBy(function (o) {
+                    return o.gId;
+                });
             $('#searchResultCount').text("Count:" + result.size().value());
-            Unit.renderIconList('#searchResultContainer', result.filter(function (o, i) { return condition.maxItem ? i < condition.maxItem : true; }).value());
+            Unit.renderIconList('#searchResultContainer', result.filter(function (o, i) {
+                return condition.maxItem ? i < condition.maxItem : true;
+            }).value());
         } catch (error) {
             console.log("search error", error);
             app_router.navigate("unit/search/", { trigger: true });
@@ -428,17 +467,33 @@ var Unit = {
             maxItem: $('#unitSearch #chkItemLimit')[0].checked ? 100 : 0,
             text: $('#unitSearch #txtSearch').val(),
             range: {
-                language: _.map($("#unitSearch #searchRangeLanguage label.btn input"), function (o) { return o.checked }),
-                general: _.map($("#unitSearch #searchRangeGeneral label.btn input"), function (o) { return o.checked }),
-                accessory: _.map($("#unitSearch #searchRangeAccessory label.btn input"), function (o) { return o.checked }),
+                language: _.map($("#unitSearch #searchRangeLanguage label.btn input"), function (o) {
+                    return o.checked
+                }),
+                general: _.map($("#unitSearch #searchRangeGeneral label.btn input"), function (o) {
+                    return o.checked
+                }),
+                accessory: _.map($("#unitSearch #searchRangeAccessory label.btn input"), function (o) {
+                    return o.checked
+                }),
                 skill: {
-                    party: _.map($("#unitSearch #searchRangeSkillParty label.btn input"), function (o) { return o.checked }),
-                    active: _.map($("#unitSearch #searchRangeSkillActive label.btn input"), function (o) { return o.checked }),
-                    panel: _.map($("#unitSearch #searchRangeSkillPanel label.btn input"), function (o) { return o.checked }),
-                    limit: _.map($("#unitSearch #searchRangeSkillLimit label.btn input"), function (o) { return o.checked }),
+                    party: _.map($("#unitSearch #searchRangeSkillParty label.btn input"), function (o) {
+                        return o.checked
+                    }),
+                    active: _.map($("#unitSearch #searchRangeSkillActive label.btn input"), function (o) {
+                        return o.checked
+                    }),
+                    panel: _.map($("#unitSearch #searchRangeSkillPanel label.btn input"), function (o) {
+                        return o.checked
+                    }),
+                    limit: _.map($("#unitSearch #searchRangeSkillLimit label.btn input"), function (o) {
+                        return o.checked
+                    }),
                 }
             },
-            select: _.map($("#unitSearch .selectpicker"), function (o) { return $(o).selectpicker('val') }),
+            select: _.map($("#unitSearch .selectpicker"), function (o) {
+                return $(o).selectpicker('val')
+            }),
         };
         var json = LZString.compressToEncodedURIComponent(JSON.stringify(condition));
         console.log(json);
@@ -540,16 +595,30 @@ var Unit = {
             lv = unit.lvMax;
         }
         var skill = {
-            party: unit.partySkill ? _.find(Data.skill.party, function (o) { return o.id == unit.partySkill[Math.floor(lv / 10)]; }) : null,
-            active: unit.activeSkill ? _.find(Data.skill.active, function (o) { return o.id == unit.activeSkill[Math.floor(lv / 10)]; }) : null,
-            panel: unit.panelSkill ? _.find(Data.skill.panel, function (o) { return o.id == unit.panelSkill[Math.floor(lv / 10)]; }) : null,
-            limit: unit.limitSkill ? _.find(Data.skill.limit, function (o) { return o.id == unit.limitSkill[Math.floor(lv / 10)]; }) : null
+            party: unit.partySkill ? _.find(Data.skill.party, function (o) {
+                return o.id == unit.partySkill[Math.floor(lv / 10)];
+            }) : null,
+            active: unit.activeSkill ? _.find(Data.skill.active, function (o) {
+                return o.id == unit.activeSkill[Math.floor(lv / 10)];
+            }) : null,
+            panel: unit.panelSkill ? _.find(Data.skill.panel, function (o) {
+                return o.id == unit.panelSkill[Math.floor(lv / 10)];
+            }) : null,
+            limit: unit.limitSkill ? _.find(Data.skill.limit, function (o) {
+                return o.id == unit.limitSkill[Math.floor(lv / 10)];
+            }) : null
         };
         if (skill.limit) {
             skill.limit.active = [
-                _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_00; }),
-                _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_01; }),
-                _.find(Data.skill.active, function (o) { return o.id == skill.limit.skill_id_02; })
+                _.find(Data.skill.active, function (o) {
+                    return o.id == skill.limit.skill_id_00;
+                }),
+                _.find(Data.skill.active, function (o) {
+                    return o.id == skill.limit.skill_id_01;
+                }),
+                _.find(Data.skill.active, function (o) {
+                    return o.id == skill.limit.skill_id_02;
+                })
             ];
         }
         return skill;
@@ -600,7 +669,9 @@ function initRouter() {
             Unit.doPage();
         }
         else {
-            if (!activeMenu) { Unit.doPage(Math.ceil(unit.gId / 100)); }
+            if (!activeMenu) {
+                Unit.doPage(Math.ceil(unit.gId / 100));
+            }
             Unit.showDetail(unit);
         }
     });
@@ -612,7 +683,9 @@ function initRouter() {
             Unit.doPage();
         }
         else {
-            if (!activeMenu) { Unit.doPage(Math.ceil(unit.gId / 100)); }
+            if (!activeMenu) {
+                Unit.doPage(Math.ceil(unit.gId / 100));
+            }
             Unit.showDetail(unit);
         }
     });
@@ -651,6 +724,8 @@ function initUiLanguage() {
 
 $(function () {
     NProgress.start();
+    NProgress.inc();
+    initUiLanguage();
     $.when(Unit.init("unit"), Unit.init("skill"))
         .then(function () {
             console.log("base data inited");
@@ -666,8 +741,6 @@ $(function () {
                 initRouter();
                 NProgress.inc();
                 initControls();
-                NProgress.inc();
-                initUiLanguage();
                 NProgress.done();
             });
         });

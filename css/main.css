@@ -1,6 +1,6 @@
 body {
     padding-top: 100px;
-    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", "Microsoft YaHei","WenQuanYi Micro Hei", sans-serif;
+    font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
 }
 
 .icon-list {
@@ -71,6 +71,6 @@ body {
     margin-top: 20px;
 }
 
-.noUi-connect{
+.noUi-connect {
     background: #337ab7;
 }
