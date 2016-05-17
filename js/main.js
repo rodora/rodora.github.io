@@ -275,7 +275,10 @@ var Unit = {
             li.append(img);
             $(target).append(li);
         });
-        $(target).find("img").unveil();
+        setTimeout(function () {
+            //a little delay to unveil for better unveil effect
+            $(target).find("img").unveil();
+        }, 100);
     },
     doSearch: function (conditionJson) {
         console.log("doSearch", conditionJson);
