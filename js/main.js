@@ -252,7 +252,7 @@ var Unit = {
     renderIconList: function (target, data) {
         console.log("renderIconList");
         var self = this;
-        $(target).find("img").attr('src','');   //stop image loading when doPage
+        $(target).find("img").attr('src', '');   //stop image loading when doPage
         $(target).empty();
         $.each(data, function (i, o) {
             if (o.gId == 0) {
@@ -585,7 +585,12 @@ var Unit = {
             };
             slider.noUiSlider.on('update', onSliderChange);
             $modal.find("img[data-id]").click(Unit.onEvolveUnitIconClick);
-            $('[data-toggle="tooltip"]').tooltip();
+            if (Unit.getLang() == 'ja-JP') {
+                $('[data-toggle="tooltip"]').removeAttr('title');
+            }
+            else {
+                $('[data-toggle="tooltip"]').tooltip();
+            }
             initUiLanguage();
         });
         $modal.on('hide.bs.modal', function (e) {
