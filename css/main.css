@@ -12,10 +12,22 @@ body {
     cursor: pointer;
     list-style-type: none;
     display: inline-block;
+    position: relative;
 }
 
 .icon {
     margin: 8px 10px;
+}
+
+.icon-no {
+    z-index: 2;
+    position: absolute;
+    bottom: 5px;
+    right: 12px;
+    font-weight: bold;
+    color: #52ceb5;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    font-size: 16px;
 }
 
 .icon-evolve {

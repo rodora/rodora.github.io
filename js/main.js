@@ -272,9 +272,11 @@ var Unit = {
                 placement: "top",
                 title: "No." + o.gId + "<br/>" + (o.lang ? o.lang.name : o.name)
             });
+            var no = $("<div>").text("No."+o.gId).addClass("icon-no");            
             var li = $("<li>");
+            li.append(no);
             li.append(img);
-            $(target).append(li);
+            $(target).addClass("icon-list").append(li);
         });
         setTimeout(function () {
             //a little delay to unveil for better unveil effect
