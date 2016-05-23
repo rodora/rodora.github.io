@@ -267,15 +267,15 @@ var Unit = {
                 $(this).unbind("error").attr("src", "/img/Icon/icon_locked.png");
             });
             img.click(self.onUnitIconClick);
-            img.tooltip({
-                html: true,
-                placement: "top",
-                title: "No." + o.gId + "<br/>" + (o.lang ? o.lang.name : o.name)
-            });
             var no = $("<div>").text("No."+o.gId).addClass("icon-no");            
             var li = $("<li>");
             li.append(no);
             li.append(img);
+            li.tooltip({
+                html: true,
+                placement: "top",
+                title: "No." + o.gId + "<br/>" + (o.lang ? o.lang.name : o.name)
+            });
             $(target).addClass("icon-list").append(li);
         });
         setTimeout(function () {
