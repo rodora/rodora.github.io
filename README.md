@@ -9,6 +9,7 @@ All unit data && image rights belong to ACQUIRE.
 - 100% UI translation (Search still not translated)
 - 100% zh-TW && zh-CN translation
 - ~~Everyday gacha list WITH ICON~~(Require backend)
+- Have-unit page(with link copy)
 - Full-size unit image in detail view 
 - Leave alpha
 - Konami code
