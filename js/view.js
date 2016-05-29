@@ -175,15 +175,16 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
                 $(this).unbind("error").attr("src", "/img/Icon/icon_locked.png");
             });
             img.click(onUnitIconClick);
-            var no = $("<div>").text("No." + o.gId).addClass("icon-no");
-            var li = $("<li>");
-            li.append(no);
-            li.append(img);
-            li.tooltip({
+            img.tooltip({
+                container:"body",
                 html: true,
                 placement: "top",
                 title: "No." + o.gId + "<br/>" + (o.lang ? o.lang.name : o.name)
             });
+            var no = $("<div>").text("No." + o.gId).addClass("icon-no");
+            var li = $("<li>");
+            li.append(no);
+            li.append(img);
             $(target).addClass("icon-list").append(li);
         });
         setTimeout(function () {

@@ -9,10 +9,13 @@ body {
 }
 
 .icon-list li {
-    cursor: pointer;
     list-style-type: none;
     display: inline-block;
     position: relative;
+}
+
+.icon-list li img {
+    cursor: pointer;
 }
 
 .icon {
