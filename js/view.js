@@ -1,81 +1,15 @@
-define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','text!/template/unitModal.html','text!/template/unitSkill.html', 'bootstrap', 'bootstrap-select'], function ($,_,Backbone,Unit,Ui,noUiSlider,LZString,unitModalTemplate,unitSkillTemplate) {
-    var app_router;
+define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZString', 'text!/template/unitModal.html', 'text!/template/unitSkill.html', 'bootstrap', 'bootstrap-select', 'jquery.unveil'], function ($, _, Backbone, Unit, Ui, noUiSlider, LZString, unitModalTemplate, unitSkillTemplate) {
     var activeMenu = "";
-    function initRouter() {
-        var AppRouter = Backbone.Router.extend({
-            routes: {
-                "unit": "unitRoute",
-                "unit/id/:id": "unitDetailRoute",
-                "unit/gid/:gid": "unitDetailByGIdRoute",
-                "unit/search/*condition": "unitSearchRoute",
-                "lang/:lang": "languageChangeRoute",
-                "lang/data/:lang": "dataLanguageChangeRoute",
-                '*path': 'defaultRoute'
-            },
-            defaultRoute: function () {
-                app_router.navigate("unit", { trigger: true });
-            }
-        });
-        // Initiate the router
-        app_router = new AppRouter;
 
-        app_router.on('route:unitRoute', function (actions) {
-            console.log("route:unitRoute");
-            doPage();
-        });
-        app_router.on('route:unitDetailRoute', function (id) {
-            var unit = _.find(Unit.data.unit, function (o) {
-                return o.id == id;
-            });
-            if (!unit) {
-                doPage();
-            }
-            else {
-                if (!activeMenu) {
-                    doPage(Math.ceil(unit.gId / 100));
-                }
-                showDetail(unit);
-            }
-        });
-        app_router.on('route:unitDetailByGIdRoute', function (gid) {
-            var unit = _.find(Unit.data.unit, function (o) {
-                return o.gId == gid;
-            });
-            if (!unit) {
-                doPage();
-            }
-            else {
-                if (!activeMenu) {
-                    doPage(Math.ceil(unit.gId / 100));
-                }
-                showDetail(unit);
-            }
-        });
-        app_router.on('route:unitSearchRoute', function (condition) {
-            doSearch(condition);
-        });
-        app_router.on('route:languageChangeRoute', function (lang) {
-            Ui.setLang(lang);
-            app_router.navigate("unit");
-            location.reload();
-        });
-        app_router.on('route:dataLanguageChangeRoute', function (lang) {
-            Unit.setLang(lang);
-            app_router.navigate("unit");
-            location.reload();
-        });
-
-        Backbone.history.start();
-    }
     function initControls() {
         $('#btnSearch').click(onSearchClick);
         $('#btnClearSearch').click(function () {
-            app_router.navigate("unit/search/reset", { trigger: true });
+            Backbone.history.navigate("unit/search/reset", { trigger: true });
         });
-        $('#btnPageFirst').click(function(){doPage("<<<");});
-        $('#btnPagePrev').click(function(){doPage("<");});
-        $('#btnPageNext').click(function(){doPage(">");});
-        $('#btnPageLast').click(function(){doPage(">>>");});
+        $('#btnPageFirst').click(function () { doPage("<<<"); });
+        $('#btnPagePrev').click(function () { doPage("<"); });
+        $('#btnPageNext').click(function () { doPage(">"); });
+        $('#btnPageLast').click(function () { doPage(">>>"); });
     }
 
     function initUiLanguage() {
@@ -85,6 +19,9 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
             var value = Ui.getText(key);
             $this.text(value);
         });
+    }
+    var getActiveMenu = function () {
+        return activeMenu;
     }
     var setActiveMenu = function (mode) {
         activeMenu = mode;
@@ -176,7 +113,7 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
             });
             img.click(onUnitIconClick);
             img.tooltip({
-                container:"body",
+                container: "body",
                 html: true,
                 placement: "top",
                 title: "No." + o.gId + "<br/>" + (o.lang ? o.lang.name : o.name)
@@ -218,7 +155,7 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
             $("#unitSearch .selectpicker").each(function (i, o) {
                 $(o).selectpicker('val', "");
             });
-            app_router.navigate("unit/search/", { trigger: true });
+            Backbone.history.navigate("unit/search/", { trigger: true });
             return;
         }
         try {
@@ -379,7 +316,7 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
             }).value());
         } catch (error) {
             console.log("search error", error);
-            app_router.navigate("unit/search/", { trigger: true });
+            Backbone.history.navigate("unit/search/", { trigger: true });
             return;
         }
     };
@@ -418,19 +355,19 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
             }),
         };
         var json = LZString.compressToEncodedURIComponent(JSON.stringify(condition));
-        app_router.navigate("unit/search/" + json, { trigger: true });
+        Backbone.history.navigate("unit/search/" + json, { trigger: true });
     };
     var onUnitIconClick = function (event) {
         console.log("onUnitIconClick");
         var id = $(event.target).data('id');
-        app_router.navigate("unit/id/" + id, { trigger: true });
+        Backbone.history.navigate("unit/id/" + id, { trigger: true });
     };
     var onEvolveUnitIconClick = function (event) {
         console.log("onEvolveUnitIconClick");
         var $oldmodal = $(event.target).parents(".modal.in");
         $oldmodal.on('hidden.bs.modal', function () {
             var id = $(event.target).data('id');
-            app_router.navigate("unit/id/" + id, { trigger: true });
+            Backbone.history.navigate("unit/id/" + id, { trigger: true });
         });
         $oldmodal.modal("hide");
     };
@@ -475,7 +412,7 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
             });
             var onSliderChange = function (e) {
                 var lv = Math.round(e[0]);
-                var current=Unit.getStatusByLevel(unit,lv);
+                var current = Unit.getStatusByLevel(unit, lv);
                 $modal.find("#unitLife").text(current.life);
                 $modal.find("#unitAttack").text(current.attack);
                 $modal.find("#unitHeal").text(current.heal);
@@ -502,7 +439,7 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
             initUiLanguage();
         });
         $modal.on('hide.bs.modal', function (e) {
-            app_router.navigate("unit");
+            Backbone.history.navigate("unit");
         });
         $modal.on('hidden.bs.modal', function () {
             console.log("hidden");
@@ -511,18 +448,16 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
         $modal.modal('show');
     };
     return {
-      router:app_router,
-      activeMenu:activeMenu,
-      initRouter:initRouter,
-      initControls:initControls,
-      initUiLanguage:initUiLanguage,  
-      setActiveMenu:setActiveMenu,
-      doPage:doPage,
-        renderIconList:renderIconList,
-        doSearch:doSearch,
-        onSearchClick:onSearchClick,
-        onUnitIconClick:onUnitIconClick,
-        onEvolveUnitIconClick:onEvolveUnitIconClick,
-        showDetail:showDetail
+        initControls: initControls,
+        initUiLanguage: initUiLanguage,
+        getActiveMenu: getActiveMenu,
+        setActiveMenu: setActiveMenu,
+        doPage: doPage,
+        renderIconList: renderIconList,
+        doSearch: doSearch,
+        onSearchClick: onSearchClick,
+        onUnitIconClick: onUnitIconClick,
+        onEvolveUnitIconClick: onEvolveUnitIconClick,
+        showDetail: showDetail
     };
 });
