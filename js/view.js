@@ -1,4 +1,4 @@
-define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZString', 'text!/template/unitModal.html', 'text!/template/unitSkill.html', 'bootstrap', 'bootstrap-select', 'jquery.unveil'], function ($, _, Backbone, Unit, Ui, noUiSlider, LZString, unitModalTemplate, unitSkillTemplate) {
+define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZString', 'text!/template/unitDetail.html', 'text!/template/unitSkill.html', 'bootstrap', 'bootstrap-select', 'jquery.unveil'], function ($, _, Backbone, Unit, Ui, noUiSlider, LZString, unitDetailTemplate, unitSkillTemplate) {
     var activeMenu = "";
 
     function initControls() {
@@ -372,7 +372,7 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
         $oldmodal.modal("hide");
     };
     var showDetail = function (unit) {
-        var template = _.template(unitModalTemplate);
+        var template = _.template(unitDetailTemplate);
         var $modal = $(template(Unit.getUnitForTemplate(unit)));
         $modal.on('show.bs.modal', function (e) {
             console.log("show");
