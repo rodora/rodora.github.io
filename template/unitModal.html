@@ -1,0 +1,142 @@
+<div id='unitModal' data-id='<%= id%>' class='modal fade' tabindex='-1' role='dialog'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span
+                            aria-hidden='true'>&times;</span></button>
+                <h4 class='modal-title' id='myModalLabel'>
+                        <span style="padding-right:10px">No.<%= gId %></span>
+                        <span style="padding-right:10px" data-toggle="tooltip" title="<%= name %>"><%= lang?lang.name:name %></span>
+                        <span><%= star %></span>
+                    </h4>
+            </div>
+            <div class='modal-body'>
+                <div class="media">
+                    <div class="media-left">
+                        <img class="media-object" data-src='/img/Icon/icon_locked.png' src='/img/Icon/I<%= gId %>.png' />
+                    </div>
+                    <div class="media-body">
+                        <div style="padding-top:5px">
+                            <div style="float:right;padding:15px 60px 20px 0;">
+                                <div id="unitLevel" style="height:200px;" />
+                            </div>
+                            <div>
+                                <div class="status-label" data-lang="life">Life</div>
+                                <span id='unitLife' />
+                            </div>
+                            <div>
+                                <div class="status-label" data-lang="attack">Attack</div>
+                                <span id='unitAttack' />
+                            </div>
+                            <div>
+                                <div class="status-label" data-lang="heal">Heal</div>
+                                <span id='unitHeal' />
+                            </div>
+                            <div>
+                                <div class="status-label" data-lang="pt">Pt</div>
+                                <span id='unitPt' />
+                            </div>
+                            <div>
+                                <div class="status-label" data-lang="exp">Exp</div>
+                                <span id='unitExp' />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-group" id="unitExtraInfo" role="tablist">
+                    <% if(_.every(revData,function(o){return o==0;})==false){ %>
+                        <div class="panel panel-default">
+                            <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseEvolve" data-lang="evolve">Evolve
+                            </div>
+                            <div id="collapseEvolve" class="panel-collapse collapse">
+                                <ul class="list-group">
+                                    <% _.each(revUnit, function(unit,i) {
+                                    if(!unit){return;}
+                                    %>
+                                        <li class="list-group-item">
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <img class="media-object icon-evolve" data-id="<%= unit.id %>" data-src='/img/Icon/icon_locked.png' src='/img/Icon/I<%= unit.gId %>.png'
+                                                    />
+                                                </div>
+                                                <div class="media-body">
+                                                    <div>
+                                                        <span style="padding-right:10px">No.<%= unit.gId %></span>
+                                                        <span style="padding-right:10px" data-toggle="tooltip" title="<%= unit.name %>"><%= unit.lang?unit.lang.name:unit.name %></span>
+                                                        <span><%= unit.star %></span>
+                                                    </div>
+                                                    <div>
+                                                        <div class='evolve-label' data-lang="evolvept">Evolve</div>
+                                                        <%= needPt %>pt
+                                                    </div>
+                                                    <% if(i>0){ %>
+                                                        <div>
+                                                            <div class='evolve-label' data-lang="awakening">Awakening</div>
+                                                            <%= maxAttributeExp %>pt
+                                                        </div>
+                                                        <% } %>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <% }); %>
+                                </ul>
+                            </div>
+                        </div>
+                        <% } %>
+                            <div id="unitSkillPanel" class="panel panel-default" style="display:none"></div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseStory" data-lang="story">Story
+                                </div>
+                                <div id="collapseStory" class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        <div style="text-align:center;">
+                                            <%= storyFormatted%>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseCutin" data-lang="cutin">Cutin
+                                </div>
+                                <div id="collapseCutin" class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        <div style="text-align:center;">
+                                            <% _.each(cutin, function(o,i) { %>
+                                                <% if(o){ %>
+                                                    <p data-toggle="tooltip" title="<%= o %>">
+                                                        <%= lang&&lang.cutin[i]?lang.cutin[i]:o %>
+                                                    </p>
+                                                    <% } %>
+                                                        <% }); %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% if(accessory){ %>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseAccessory" data-lang="accessory">Accessory
+                                    </div>
+                                    <div id="collapseAccessory" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <div class="media">
+                                                <div class="media-left">
+                                                    <img class="media-object" data-src='/img/AI/Ac_bg.png' src='/img/AI/<%= accessory.icon %>.png' />
+                                                </div>
+                                                <div class="media-body">
+                                                    <span data-toggle="tooltip" title="<%= accessory.name %>">
+                                                            <%= lang&&lang.accessory?lang.accessory.name:accessory.name %>
+                                                        </span>
+                                                    <div data-toggle="tooltip" data-html="true" title="<%= accessory.detailFormatted %>">
+                                                        <%= accessory.detailFormattedLocal %>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

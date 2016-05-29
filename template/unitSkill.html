@@ -1,0 +1,77 @@
+<div id="unitSkillPanel" class="panel panel-default" <% if(!(party||active||panel||limit)){ %>style="display:none"
+    <% } %>
+        >
+        <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseSkill" data-lang="skill">Skill
+        </div>
+        <div id="collapseSkill" class="panel-collapse collapse in">
+            <ul class="list-group">
+                <% if(party){ %>
+                    <li class="list-group-item">
+                        <div class="list-group-item-heading">
+                            <div class="skill-label" data-lang="party">Party</div>
+                            <span data-toggle="tooltip" title="<%= party.name %>"><%= party.lang?party.lang.name:party.name %></span>
+                        </div>
+                        <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= party.textFormatted %>">
+                            <%= party.textFormattedLocal %>
+                        </p>
+                    </li>
+                    <% } %>
+                        <% if(active){ %>
+                            <li class="list-group-item">
+                                <div class="list-group-item-heading">
+                                    <div class="skill-label" data-lang="active">Active</div>
+                                    <span data-toggle="tooltip" title="<%= active.name %>"><%= active.lang?active.lang.name:active.name %></span>
+                                    <div style="float:right">
+                                        <span data-lang="soul">Soul</span>
+                                        <span style="font-weight:bold"><%= active.soul %></span>
+                                    </div>
+                                </div>
+                                <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= active.textFormatted %>">
+                                    <%= active.textFormattedLocal %>
+                                </p>
+                            </li>
+                            <% } %>
+                                <% if(panel){ %>
+                                    <li class="list-group-item">
+                                        <div class="list-group-item-heading">
+                                            <div class="skill-label" data-lang="panel">Panel</div>
+                                            <span data-toggle="tooltip" title="<%= panel.name %>"><%= panel.lang?panel.lang.name:panel.name %></span>
+                                        </div>
+                                        <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= panel.textFormatted %>">
+                                            <%= panel.textFormattedLocal %>
+                                        </p>
+                                    </li>
+                                    <% } %>
+                                        <% if(limit){ %>
+                                            <li class="list-group-item">
+                                                <div class="list-group-item-heading">
+                                                    <div class="skill-label" data-lang="limit">Limit</div>
+                                                    <span data-toggle="tooltip" title="<%= limit.name %>"><%= limit.lang?limit.lang.name:limit.name %></span>
+                                                </div>
+                                                <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= limit.textFormatted %>">
+                                                    <%= limit.textFormattedLocal %>
+                                                        <ul class="list-group">
+                                                            <% _.each(limit.active,function(active,i){%>
+                                                                <li class="list-group-item">
+                                                                    <div class="list-group-item-heading">
+                                                                        <div class="skill-label">Level
+                                                                            <%= limit["limit_pt_0"+i] %>
+                                                                        </div>
+                                                                        <span data-toggle="tooltip" title="<%= active.name %>"><%= active.lang?active.lang.name:active.name %></span>
+                                                                        <div style="float:right">
+                                                                            <span data-lang="soul">Soul</span>
+                                                                            <span style="font-weight:bold"><%= active.soul %></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= active.textFormatted %>">
+                                                                        <%= active.textFormattedLocal %>
+                                                                    </p>
+                                                                </li>
+                                                                <% }); %>
+                                                        </ul>
+                                                </p>
+                                            </li>
+                                            <% } %>
+            </ul>
+        </div>
+</div>

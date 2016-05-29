@@ -9,12 +9,12 @@
     <title>*α*RoDora UnitSearch</title>
 
     <!-- Bootstrap -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/bootstrap-select.min.css" rel="stylesheet">
-    <link href="css/nprogress.css" rel="stylesheet">
-    <link href="css/nouislider.min.css" rel="stylesheet">
-    <link href="css/nouislider.pips.css" rel="stylesheet">
-    <link href="css/nouislider.tooltips.css" rel="stylesheet">
+    <link href="css/libs/bootstrap.min.css" rel="stylesheet">
+    <link href="css/libs/bootstrap-select.min.css" rel="stylesheet">
+    <link href="css/libs/nprogress.css" rel="stylesheet">
+    <link href="css/libs/nouislider.min.css" rel="stylesheet">
+    <link href="css/libs/nouislider.pips.css" rel="stylesheet">
+    <link href="css/libs/nouislider.tooltips.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -87,13 +87,13 @@
     <div id="unitList" style="display:none">
         <nav class="pager-fixed-top">
             <ul class="pager">
-                <li><a href="javascript:Unit.doPage('<<<')"><span class="glyphicon glyphicon-menu-left"></span><span
+                <li><a id='btnPageFirst' href="javascript:void(0);"><span class="glyphicon glyphicon-menu-left"></span><span
                     class="glyphicon glyphicon-menu-left"></span><span class="glyphicon glyphicon-menu-left"></span></a>
                 </li>
-                <li><a href="javascript:Unit.doPage('<')"><span class="glyphicon glyphicon-menu-left"></span></a></li>
+                <li><a id='btnPagePrev' href="javascript:void(0);"><span class="glyphicon glyphicon-menu-left"></span></a></li>
                 <li><span id="pageInfo"></span></li>
-                <li><a href="javascript:Unit.doPage('>')"><span class="glyphicon glyphicon-menu-right"></span></a></li>
-                <li><a href="javascript:Unit.doPage('>>>')"><span class="glyphicon glyphicon-menu-right"></span><span
+                <li><a id='btnPageNext' href="javascript:void(0);"><span class="glyphicon glyphicon-menu-right"></span></a></li>
+                <li><a id='btnPageLast' href="javascript:void(0);"><span class="glyphicon glyphicon-menu-right"></span><span
                     class="glyphicon glyphicon-menu-right"></span><span
                     class="glyphicon glyphicon-menu-right"></span></a></li>
             </ul>
@@ -240,17 +240,7 @@
 
     </div>
 
-    <script src="js/lz-string.min.js"></script>
-    <script src="js/jquery-1.12.3.min.js"></script>
-    <script src="js/jquery.unveil.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/bootstrap-select.min.js"></script>
-    <script src="js/underscore-min.js"></script>
-    <script src="js/backbone-min.js"></script>
-    <script src="js/nprogress.js"></script>
-    <script src="js/nouislider.min.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/lang.js"></script>
+    <script src="js/libs/require.js" data-main="js/main" defer async="true"></script>
     <script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
@@ -270,230 +260,3 @@
 </body>
 
 </html>
-
-<script id="unitModalTemplate" type="text/template">
-    <div id='unitModal' data-id='<%= id%>' class='modal fade' tabindex='-1' role='dialog'>
-        <div class='modal-dialog'>
-            <div class='modal-content'>
-                <div class='modal-header'>
-                    <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span
-                            aria-hidden='true'>&times;</span></button>
-                    <h4 class='modal-title' id='myModalLabel'>
-                        <span style="padding-right:10px">No.<%= gId %></span>
-                        <span style="padding-right:10px" data-toggle="tooltip" title="<%= name %>"><%= lang?lang.name:name %></span>
-                        <span><%= Unit.convertRarityToStar(category) %></span>
-                    </h4>
-                </div>
-                <div class='modal-body'>
-                    <div class="media">
-                        <div class="media-left">
-                            <img class="media-object" data-src='/img/Icon/icon_locked.png' src='/img/Icon/I<%= gId %>.png' />
-                        </div>
-                        <div class="media-body">
-                            <div style="padding-top:5px">
-                                <div style="float:right;padding:15px 60px 20px 0;">
-                                    <div id="unitLevel" style="height:200px;" />
-                                </div>
-                                <div>
-                                    <div class="status-label" data-lang="life">Life</div>
-                                    <span id='unitLife' />
-                                </div>
-                                <div>
-                                    <div class="status-label" data-lang="attack">Attack</div>
-                                    <span id='unitAttack' />
-                                </div>
-                                <div>
-                                    <div class="status-label" data-lang="heal">Heal</div>
-                                    <span id='unitHeal' />
-                                </div>
-                                <div>
-                                    <div class="status-label" data-lang="pt">Pt</div>
-                                    <span id='unitPt' />
-                                </div>
-                                <div>
-                                    <div class="status-label" data-lang="exp">Exp</div>
-                                    <span id='unitExp' />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="panel-group" id="unitExtraInfo" role="tablist">
-                        <% if(_.every(revData,function(o){return o==0;})==false){ %>
-                            <div class="panel panel-default">
-                                <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseEvolve" data-lang="evolve">Evolve
-                                </div>
-                                <div id="collapseEvolve" class="panel-collapse collapse">
-                                    <ul class="list-group">
-                                        <% _.each(revData, function(o,i) {
-                                    var unit=_.find(Data.unit,function(u){return u.id==o;});
-                                    if(!unit){return;}
-                                    %>
-                                            <li class="list-group-item">
-                                                <div class="media">
-                                                    <div class="media-left">
-                                                        <img class="media-object icon-evolve" data-id="<%= unit.id %>" data-src='/img/Icon/icon_locked.png' src='/img/Icon/I<%= unit.gId %>.png'
-                                                        />
-                                                    </div>
-                                                    <div class="media-body">
-                                                        <div>
-                                                            <span style="padding-right:10px">No.<%= unit.gId %></span>
-                                                            <span style="padding-right:10px" data-toggle="tooltip" title="<%= unit.name %>"><%= unit.lang?unit.lang.name:unit.name %></span>
-                                                            <span><%= Unit.convertRarityToStar(unit.category) %></span>
-                                                        </div>
-                                                        <div>
-                                                            <div class='evolve-label' data-lang="evolvept">Evolve</div>
-                                                            <%= needPt %>pt
-                                                        </div>
-                                                        <% if(i>0){ %>
-                                                            <div>
-                                                                <div class='evolve-label' data-lang="awakening">Awakening</div>
-                                                                <%= maxAttributeExp %>pt
-                                                            </div>
-                                                            <% } %>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <% }); %>
-                                    </ul>
-                                </div>
-                            </div>
-                            <% } %>
-                                <div id="unitSkillPanel" class="panel panel-default" style="display:none"></div>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseStory" data-lang="story">Story
-                                    </div>
-                                    <div id="collapseStory" class="panel-collapse collapse">
-                                        <div class="panel-body">
-                                            <div style="text-align:center;">
-                                                <%= Unit.formatStory(lang?lang.story:story)%>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseCutin" data-lang="cutin">Cutin
-                                    </div>
-                                    <div id="collapseCutin" class="panel-collapse collapse">
-                                        <div class="panel-body">
-                                            <div style="text-align:center;">
-                                                <% _.each(cutin, function(o,i) { %>
-                                                    <% if(o){ %>
-                                                        <p data-toggle="tooltip" title="<%= o %>">
-                                                            <%= lang&&lang.cutin[i]?lang.cutin[i]:o %>
-                                                        </p>
-                                                        <% } %>
-                                                            <% }); %>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <% if(accessory){ %>
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseAccessory" data-lang="accessory">Accessory
-                                        </div>
-                                        <div id="collapseAccessory" class="panel-collapse collapse">
-                                            <div class="panel-body">
-                                                <div class="media">
-                                                    <div class="media-left">
-                                                        <img class="media-object" data-src='/img/AI/Ac_bg.png' src='/img/AI/<%= accessory.icon %>.png' />
-                                                    </div>
-                                                    <div class="media-body">
-                                                        <span data-toggle="tooltip" title="<%= accessory.name %>">
-                                                            <%= lang&&lang.accessory?lang.accessory.name:accessory.name %>
-                                                        </span>
-                                                        <div data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(accessory.detail) %>">
-                                                            <%=
-                                                Unit.formatRichText(lang&&lang.accessory?lang.accessory.detail:accessory.detail)
-                                                %>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <% } %>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</script>
-<script id="unitSkillTemplate" type="text/template">
-    <div id="unitSkillPanel" class="panel panel-default" <% if(!(party||active||panel||limit)){ %>style="display:none"
-        <% } %>
-            >
-            <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseSkill" data-lang="skill">Skill
-            </div>
-            <div id="collapseSkill" class="panel-collapse collapse in">
-                <ul class="list-group">
-                    <% if(party){ %>
-                        <li class="list-group-item">
-                            <div class="list-group-item-heading">
-                                <div class="skill-label" data-lang="party">Party</div>
-                                <span data-toggle="tooltip" title="<%= party.name %>"><%= party.lang?party.lang.name:party.name %></span>
-                            </div>
-                            <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(party.text) %>">
-                                <%= Unit.formatRichText(party.lang?party.lang.text:party.text) %>
-                            </p>
-                        </li>
-                        <% } %>
-                            <% if(active){ %>
-                                <li class="list-group-item">
-                                    <div class="list-group-item-heading">
-                                        <div class="skill-label" data-lang="active">Active</div>
-                                        <span data-toggle="tooltip" title="<%= active.name %>"><%= active.lang?active.lang.name:active.name %></span>
-                                        <div style="float:right">
-                                            <span data-lang="soul">Soul</span>
-                                            <span style="font-weight:bold"><%= active.soul %></span>
-                                        </div>
-                                    </div>
-                                    <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(active.text) %>">
-                                        <%= Unit.formatRichText(active.lang?active.lang.text:active.text) %>
-                                    </p>
-                                </li>
-                                <% } %>
-                                    <% if(panel){ %>
-                                        <li class="list-group-item">
-                                            <div class="list-group-item-heading">
-                                                <div class="skill-label" data-lang="panel">Panel</div>
-                                                <span data-toggle="tooltip" title="<%= panel.name %>"><%= panel.lang?panel.lang.name:panel.name %></span>
-                                            </div>
-                                            <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(panel.text) %>">
-                                                <%= Unit.formatRichText(panel.lang?panel.lang.text:panel.text) %>
-                                            </p>
-                                        </li>
-                                        <% } %>
-                                            <% if(limit){ %>
-                                                <li class="list-group-item">
-                                                    <div class="list-group-item-heading">
-                                                        <div class="skill-label" data-lang="limit">Limit</div>
-                                                        <span data-toggle="tooltip" title="<%= limit.name %>"><%= limit.lang?limit.lang.name:limit.name %></span>
-                                                    </div>
-                                                    <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(limit.general_text) %>">
-                                                        <%= Unit.formatRichText(limit.lang?limit.lang.general_text:limit.general_text) %>
-                                                            <ul class="list-group">
-                                                                <% _.each(limit.active,function(active,i){%>
-                                                                    <li class="list-group-item">
-                                                                        <div class="list-group-item-heading">
-                                                                            <div class="skill-label">Level
-                                                                                <%= limit["limit_pt_0"+i] %>
-                                                                            </div>
-                                                                            <span data-toggle="tooltip" title="<%= active.name %>"><%= active.lang?active.lang.name:active.name %></span>
-                                                                            <div style="float:right">
-                                                                                <span data-lang="soul">Soul</span>
-                                                                                <span style="font-weight:bold"><%= active.soul %></span>
-                                                                            </div>
-                                                                        </div>
-                                                                        <p class="list-group-item-text" data-toggle="tooltip" data-html="true" title="<%= Unit.formatRichText(active.text) %>">
-                                                                            <%= Unit.formatRichText(active.lang?active.lang.text:active.text) %>
-                                                                        </p>
-                                                                    </li>
-                                                                    <% }); %>
-                                                            </ul>
-                                                    </p>
-                                                </li>
-                                                <% } %>
-                </ul>
-            </div>
-    </div>
-</script>
