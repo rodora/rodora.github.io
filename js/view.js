@@ -89,7 +89,7 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
     var setActiveMenu = function (mode) {
         activeMenu = mode;
         $("nav.navbar .active").removeClass('active');
-        $("body>div").hide();
+        $("body>div[data-tab]").hide();
         switch (mode.toLowerCase()) {
             case "unitlist":
                 {
