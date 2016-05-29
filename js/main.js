@@ -21,15 +21,15 @@ require.config({
         "bootstrap-select": "libs/bootstrap-select.min"
     }
 });
-require(['jquery', 'underscore', 'nprogress', 'unit', 'ui', 'view'], function ($, _, NProgress, Unit, Ui, View) {
+NProgress.start();
+require(['jquery', 'underscore',  'unit', 'ui', 'view'], function ($, _, Unit, Ui, View) {
     $(function () {
-        NProgress.start();
-        NProgress.inc();
+        NProgress.set(0.33);
         View.initUiLanguage();
         $.when(Unit.init("unit"), Unit.init("skill"))
             .then(function () {
                 console.log("base data inited");
-                NProgress.set(0.5);
+                NProgress.set(0.66);
                 localStorage.setItem("lastUpdate", JSON.stringify(new Date()))
                 var lang = Unit.getLang();
                 $.when(Unit.init("unit", lang), Unit.init("skill", lang)).done(function () {
