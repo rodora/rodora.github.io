@@ -16,6 +16,7 @@ require.config({
         "backbone": "libs/backbone-min",
         "nprogress": "libs/nprogress",
         "LZString": "libs/lz-string.min",
+        "bitset": "libs/bitset.min",
         "nouislider": "libs/nouislider.min",
         "bootstrap": "libs/bootstrap.min",
         "bootstrap-select": "libs/bootstrap-select.min"

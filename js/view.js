@@ -1,7 +1,7 @@
-define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZString', 'text!/template/unitDetail.html', 'text!/template/unitSkill.html', 'bootstrap', 'bootstrap-select', 'jquery.unveil'], function ($, _, Backbone, Unit, Ui, noUiSlider, LZString, unitDetailTemplate, unitSkillTemplate) {
+define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZString', 'bitset', 'text!/template/unitDetail.html', 'text!/template/unitSkill.html', 'bootstrap', 'bootstrap-select', 'jquery.unveil'], function ($, _, Backbone, Unit, Ui, noUiSlider, LZString, BitSet, unitDetailTemplate, unitSkillTemplate) {
     var activeMenu = "";
 
-    function initControls() {
+    var initControls = function () {
         $('#btnSearch').click(onSearchClick);
         $('#btnClearSearch').click(function () {
             Backbone.history.navigate("unit/search/reset", { trigger: true });
@@ -10,16 +10,15 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
         $('#btnPagePrev').click(function () { doPage("<"); });
         $('#btnPageNext').click(function () { doPage(">"); });
         $('#btnPageLast').click(function () { doPage(">>>"); });
-    }
-
-    function initUiLanguage() {
+    };
+    var initUiLanguage = function () {
         $('[data-lang]').each(function () {
             var $this = $(this);
             var key = $this.data("lang");
             var value = Ui.getText(key);
             $this.text(value);
         });
-    }
+    };
     var getActiveMenu = function () {
         return activeMenu;
     }
@@ -93,9 +92,9 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
                 return o.gId;
             })
             .value();
-        renderIconList('#iconContainer', unitpagelist);
+        renderIconList('#iconContainer', unitpagelist, onUnitIconClick);
     };
-    var renderIconList = function (target, data) {
+    var renderIconList = function (target, data, iconClickEvent) {
         console.log("renderIconList");
         $(target).find("img").attr('src', '');   //stop image loading when doPage
         $(target).empty();
@@ -111,7 +110,7 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
             img.error(function () {
                 $(this).unbind("error").attr("src", "/img/Icon/icon_locked.png");
             });
-            img.click(onUnitIconClick);
+            img.click(iconClickEvent);
             img.tooltip({
                 container: "body",
                 html: true,
@@ -128,6 +127,96 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
             //a little delay to unveil for better unveil effect
             $(target).find("img").unveil();
         }, 100);
+    };
+    var onUnitIconClick = function (event) {
+        console.log("onUnitIconClick");
+        var id = $(event.target).data('id');
+        Backbone.history.navigate("unit/id/" + id, { trigger: true });
+    };
+    var onEvolveUnitIconClick = function (event) {
+        console.log("onEvolveUnitIconClick");
+        var $oldmodal = $(event.target).parents(".modal.in");
+        $oldmodal.on('hidden.bs.modal', function () {
+            var id = $(event.target).data('id');
+            Backbone.history.navigate("unit/id/" + id, { trigger: true });
+        });
+        $oldmodal.modal("hide");
+    };
+    var showDetail = function (unit) {
+        var template = _.template(unitDetailTemplate);
+        var $modal = $(template(Unit.getUnitForTemplate(unit)));
+        $modal.on('show.bs.modal', function (e) {
+            console.log("show");
+            $modal.find("img").error(function () {
+                $(this).unbind("error").attr("src", $(this).attr("data-src"));
+            });
+        });
+        $modal.on('shown.bs.modal', function (e) {
+            console.log("shown");
+            var slider = $modal.find('#unitLevel')[0];
+            noUiSlider.create(slider, {
+                animate: true,
+                animationDuration: 300,
+                start: unit.lvMax,
+                step: 1,
+                connect: 'lower',
+                direction: 'rtl',
+                orientation: 'vertical',
+                range: {
+                    'min': 1,
+                    'max': unit.lvMax == 1 ? 1.0001 : unit.lvMax
+                },
+                pips: {
+                    mode: 'values',
+                    values: [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 99],
+                    density: 3,
+                    stepped: true
+                },
+                tooltips: {
+                    to: function (value) {
+                        return 'Lv&nbsp;' + Math.round(value);
+                    },
+                    from: function (value) {
+                        return value.replace('Lv&nbsp;', '');
+                    }
+                }
+            });
+            var onSliderChange = function (e) {
+                var lv = Math.round(e[0]);
+                var current = Unit.getStatusByLevel(unit, lv);
+                $modal.find("#unitLife").text(current.life);
+                $modal.find("#unitAttack").text(current.attack);
+                $modal.find("#unitHeal").text(current.heal);
+                $modal.find("#unitPt").text(current.pt);
+                if (lv == unit.lvMax) {
+                    $modal.find("#unitExp").text(current.minExp);
+                }
+                else {
+                    $modal.find("#unitExp").text(current.minExp + "~" + (current.maxExp - 1));
+                }
+                var skill = Unit.getSkillByLevel(unit, lv);
+                var skilltemplate = _.template(unitSkillTemplate);
+                $('#unitSkillPanel').replaceWith(skilltemplate(Unit.getSkillForTemplate(skill)));
+                initUiLanguage();
+            };
+            slider.noUiSlider.on('update', onSliderChange);
+            $modal.find("img[data-id]").click(onEvolveUnitIconClick);
+            if (Unit.getLang() == 'ja-JP') {
+                $('[data-toggle="tooltip"]').removeAttr('title');
+            }
+            else {
+                $('[data-toggle="tooltip"]').tooltip();
+            }
+            initUiLanguage();
+        });
+        $modal.on('hide.bs.modal', function (e) {
+            Backbone.history.navigate("unit");
+        });
+        $modal.on('hidden.bs.modal', function () {
+            console.log("hidden");
+            $(this).remove();
+        });
+        $modal.modal('show');
     };
     var doSearch = function (conditionJson) {
         console.log("doSearch", conditionJson);
@@ -313,7 +402,7 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
             $('#searchResultCount').text("Count:" + result.size().value());
             renderIconList('#searchResultContainer', result.filter(function (o, i) {
                 return condition.maxItem ? i < condition.maxItem : true;
-            }).value());
+            }).value(), onUnitIconClick);
         } catch (error) {
             console.log("search error", error);
             Backbone.history.navigate("unit/search/", { trigger: true });
@@ -357,95 +446,42 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
         var json = LZString.compressToEncodedURIComponent(JSON.stringify(condition));
         Backbone.history.navigate("unit/search/" + json, { trigger: true });
     };
-    var onUnitIconClick = function (event) {
-        console.log("onUnitIconClick");
-        var id = $(event.target).data('id');
-        Backbone.history.navigate("unit/id/" + id, { trigger: true });
-    };
-    var onEvolveUnitIconClick = function (event) {
-        console.log("onEvolveUnitIconClick");
-        var $oldmodal = $(event.target).parents(".modal.in");
-        $oldmodal.on('hidden.bs.modal', function () {
-            var id = $(event.target).data('id');
-            Backbone.history.navigate("unit/id/" + id, { trigger: true });
-        });
-        $oldmodal.modal("hide");
-    };
-    var showDetail = function (unit) {
-        var template = _.template(unitDetailTemplate);
-        var $modal = $(template(Unit.getUnitForTemplate(unit)));
-        $modal.on('show.bs.modal', function (e) {
-            console.log("show");
-            $modal.find("img").error(function () {
-                $(this).unbind("error").attr("src", $(this).attr("data-src"));
+    var category = [
+        {
+            key: "yorishiro",
+            gids: [169,170,171,172,221,222,223,224,299,300,301,314,315,316,327,328,329,345,362,363,364,415,416,510,538,539,625,626,677,911,995,996,997,998,1000,1093,1307,1308,1309,1310,1596]
+        },
+        {
+            key: "yorishiro-tree",
+            gids: [1193,1194,1195,1196,1197,1198,1199,1200,1201,1202,1203,1204,1205,1206,1207,1208,1209,1210,1211,1212,1213,1214,1215,1216,1217,1218,1219,1220,1221,1222,1223,1224,1225,1226,1227,1228,1422,1423,1424]
+        },
+    ];
+    var haveUnit = new BitSet;
+    var doCategory = function (condition) {
+        console.log("doCategory");
+        setActiveMenu("unitcategory");
+        $("#categoryContainer").empty();
+        _.each(category, function (o, i) {
+            var group = {};
+            group.name = o.key;
+            group.unitlist = [];
+            _.each(o.gids, function (gid) {
+                var unit = _.find(Unit.data.unit, function (o) {
+                    return o.gId == gid;
+                });
+                unit && group.unitlist.push(unit);
             });
-        });
-        $modal.on('shown.bs.modal', function (e) {
-            console.log("shown");
-            var slider = $modal.find('#unitLevel')[0];
-            noUiSlider.create(slider, {
-                animate: true,
-                animationDuration: 300,
-                start: unit.lvMax,
-                step: 1,
-                connect: 'lower',
-                direction: 'rtl',
-                orientation: 'vertical',
-                range: {
-                    'min': 1,
-                    'max': unit.lvMax == 1 ? 1.0001 : unit.lvMax
-                },
-                pips: {
-                    mode: 'values',
-                    values: [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 99],
-                    density: 3,
-                    stepped: true
-                },
-                tooltips: {
-                    to: function (value) {
-                        return 'Lv&nbsp;' + Math.round(value);
-                    },
-                    from: function (value) {
-                        return value.replace('Lv&nbsp;', '');
-                    }
-                }
+
+            var row = $("<div>").addClass("row");
+            var colname = $("<div>").addClass("col-md-1 col-md-offset-1").text(group.name);
+            var colicon = $("<div>").addClass("col-md-9");
+            var iconContainer = $("<div>").addClass("icon-list icon-list-category");
+            renderIconList(iconContainer, group.unitlist, function (event) {
+
             });
-            var onSliderChange = function (e) {
-                var lv = Math.round(e[0]);
-                var current = Unit.getStatusByLevel(unit, lv);
-                $modal.find("#unitLife").text(current.life);
-                $modal.find("#unitAttack").text(current.attack);
-                $modal.find("#unitHeal").text(current.heal);
-                $modal.find("#unitPt").text(current.pt);
-                if (lv == unit.lvMax) {
-                    $modal.find("#unitExp").text(current.minExp);
-                }
-                else {
-                    $modal.find("#unitExp").text(current.minExp + "~" + (current.maxExp - 1));
-                }
-                var skill = Unit.getSkillByLevel(unit, lv);
-                var skilltemplate = _.template(unitSkillTemplate);
-                $('#unitSkillPanel').replaceWith(skilltemplate(Unit.getSkillForTemplate(skill)));
-                initUiLanguage();
-            };
-            slider.noUiSlider.on('update', onSliderChange);
-            $modal.find("img[data-id]").click(onEvolveUnitIconClick);
-            if (Unit.getLang() == 'ja-JP') {
-                $('[data-toggle="tooltip"]').removeAttr('title');
-            }
-            else {
-                $('[data-toggle="tooltip"]').tooltip();
-            }
-            initUiLanguage();
+            $("#categoryContainer").append(row.append(colname).append(colicon.append(iconContainer)));
         });
-        $modal.on('hide.bs.modal', function (e) {
-            Backbone.history.navigate("unit");
-        });
-        $modal.on('hidden.bs.modal', function () {
-            console.log("hidden");
-            $(this).remove();
-        });
-        $modal.modal('show');
+        $("#categoryContainer").find("img").addClass("icon-nothave")
     };
     return {
         initControls: initControls,
@@ -454,10 +490,11 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
         setActiveMenu: setActiveMenu,
         doPage: doPage,
         renderIconList: renderIconList,
-        doSearch: doSearch,
-        onSearchClick: onSearchClick,
         onUnitIconClick: onUnitIconClick,
         onEvolveUnitIconClick: onEvolveUnitIconClick,
-        showDetail: showDetail
+        showDetail: showDetail,
+        doSearch: doSearch,
+        onSearchClick: onSearchClick,
+        doCategory: doCategory
     };
 });
