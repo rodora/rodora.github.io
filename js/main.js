@@ -46,4 +46,7 @@ require(['jquery', 'underscore', 'unit', 'ui', 'view', 'router'], function ($, _
                 });
             });
     });
+}, function (err) {
+    console.log("network error, will auto reload.");
+    location.reload();
 });
