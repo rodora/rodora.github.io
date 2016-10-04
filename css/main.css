@@ -8,6 +8,10 @@ body {
     text-align: center;
 }
 
+.icon-list-category {
+    text-align: left;
+}
+
 .icon-list li {
     list-style-type: none;
     display: inline-block;
@@ -35,6 +39,10 @@ body {
 
 .icon-evolve {
     cursor: pointer;
+}
+
+.icon-nothave {
+    opacity: 0.5;
 }
 
 .panel-heading {

@@ -1,90 +1,26 @@
-define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','text!/template/unitModal.html','text!/template/unitSkill.html', 'bootstrap', 'bootstrap-select'], function ($,_,Backbone,Unit,Ui,noUiSlider,LZString,unitModalTemplate,unitSkillTemplate) {
-    var app_router;
+define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZString', 'bitset', 'text!/template/unitDetail.html', 'text!/template/unitSkill.html', 'bootstrap', 'bootstrap-select', 'jquery.unveil'], function ($, _, Backbone, Unit, Ui, noUiSlider, LZString, BitSet, unitDetailTemplate, unitSkillTemplate) {
     var activeMenu = "";
-    function initRouter() {
-        var AppRouter = Backbone.Router.extend({
-            routes: {
-                "unit": "unitRoute",
-                "unit/id/:id": "unitDetailRoute",
-                "unit/gid/:gid": "unitDetailByGIdRoute",
-                "unit/search/*condition": "unitSearchRoute",
-                "lang/:lang": "languageChangeRoute",
-                "lang/data/:lang": "dataLanguageChangeRoute",
-                '*path': 'defaultRoute'
-            },
-            defaultRoute: function () {
-                app_router.navigate("unit", { trigger: true });
-            }
-        });
-        // Initiate the router
-        app_router = new AppRouter;
 
-        app_router.on('route:unitRoute', function (actions) {
-            console.log("route:unitRoute");
-            doPage();
-        });
-        app_router.on('route:unitDetailRoute', function (id) {
-            var unit = _.find(Unit.data.unit, function (o) {
-                return o.id == id;
-            });
-            if (!unit) {
-                doPage();
-            }
-            else {
-                if (!activeMenu) {
-                    doPage(Math.ceil(unit.gId / 100));
-                }
-                showDetail(unit);
-            }
-        });
-        app_router.on('route:unitDetailByGIdRoute', function (gid) {
-            var unit = _.find(Unit.data.unit, function (o) {
-                return o.gId == gid;
-            });
-            if (!unit) {
-                doPage();
-            }
-            else {
-                if (!activeMenu) {
-                    doPage(Math.ceil(unit.gId / 100));
-                }
-                showDetail(unit);
-            }
-        });
-        app_router.on('route:unitSearchRoute', function (condition) {
-            doSearch(condition);
-        });
-        app_router.on('route:languageChangeRoute', function (lang) {
-            Ui.setLang(lang);
-            app_router.navigate("unit");
-            location.reload();
-        });
-        app_router.on('route:dataLanguageChangeRoute', function (lang) {
-            Unit.setLang(lang);
-            app_router.navigate("unit");
-            location.reload();
-        });
-
-        Backbone.history.start();
-    }
-    function initControls() {
+    var initControls = function () {
         $('#btnSearch').click(onSearchClick);
         $('#btnClearSearch').click(function () {
-            app_router.navigate("unit/search/reset", { trigger: true });
+            Backbone.history.navigate("unit/search/reset", { trigger: true });
         });
-        $('#btnPageFirst').click(function(){doPage("<<<");});
-        $('#btnPagePrev').click(function(){doPage("<");});
-        $('#btnPageNext').click(function(){doPage(">");});
-        $('#btnPageLast').click(function(){doPage(">>>");});
-    }
-
-    function initUiLanguage() {
+        $('#btnPageFirst').click(function () { doPage("<<<"); });
+        $('#btnPagePrev').click(function () { doPage("<"); });
+        $('#btnPageNext').click(function () { doPage(">"); });
+        $('#btnPageLast').click(function () { doPage(">>>"); });
+    };
+    var initUiLanguage = function () {
         $('[data-lang]').each(function () {
             var $this = $(this);
             var key = $this.data("lang");
             var value = Ui.getText(key);
             $this.text(value);
         });
+    };
+    var getActiveMenu = function () {
+        return activeMenu;
     }
     var setActiveMenu = function (mode) {
         activeMenu = mode;
@@ -156,9 +92,9 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
                 return o.gId;
             })
             .value();
-        renderIconList('#iconContainer', unitpagelist);
+        renderIconList('#iconContainer', unitpagelist, onUnitIconClick);
     };
-    var renderIconList = function (target, data) {
+    var renderIconList = function (target, data, iconClickEvent) {
         console.log("renderIconList");
         $(target).find("img").attr('src', '');   //stop image loading when doPage
         $(target).empty();
@@ -174,9 +110,9 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
             img.error(function () {
                 $(this).unbind("error").attr("src", "/img/Icon/icon_locked.png");
             });
-            img.click(onUnitIconClick);
+            img.click(iconClickEvent);
             img.tooltip({
-                container:"body",
+                container: "body",
                 html: true,
                 placement: "top",
                 title: "No." + o.gId + "<br/>" + (o.lang ? o.lang.name : o.name)
@@ -192,6 +128,103 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
             $(target).find("img").unveil();
         }, 100);
     };
+    var onUnitIconClick = function (event) {
+        console.log("onUnitIconClick");
+        var id = $(event.target).data('id');
+        Backbone.history.navigate("unit/id/" + id, { trigger: true });
+    };
+    var onEvolveUnitIconClick = function (event) {
+        console.log("onEvolveUnitIconClick");
+        var $oldmodal = $(event.target).parents(".modal.in");
+        $oldmodal.on('hidden.bs.modal', function () {
+            var id = $(event.target).data('id');
+            Backbone.history.navigate("unit/id/" + id, { trigger: true });
+        });
+        $oldmodal.modal("hide");
+    };
+    var showDetail = function (unit) {
+        var template = _.template(unitDetailTemplate);
+        var $modal = $(template(Unit.getUnitForTemplate(unit)));
+        $modal.on('show.bs.modal', function (e) {
+            console.log("show");
+            $modal.find("img").error(function () {
+                $(this).unbind("error").attr("src", $(this).attr("data-src"));
+            });
+        });
+        $modal.on('shown.bs.modal', function (e) {
+            console.log("shown");
+            var slider = $modal.find('#unitLevel')[0];
+            noUiSlider.create(slider, {
+                animate: true,
+                animationDuration: 300,
+                start: unit.lvMax,
+                step: 1,
+                connect: 'lower',
+                direction: 'rtl',
+                orientation: 'vertical',
+                range: {
+                    'min': 1,
+                    'max': unit.lvMax == 1 ? 1.0001 : unit.lvMax
+                },
+                pips: {
+                    mode: 'values',
+                    values: [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 99],
+                    density: 3,
+                    stepped: true
+                },
+                tooltips: {
+                    to: function (value) {
+                        return 'Lv&nbsp;' + Math.round(value);
+                    },
+                    from: function (value) {
+                        return value.replace('Lv&nbsp;', '');
+                    }
+                }
+            });
+            var onSliderChange = function (e) {
+                var lv = Math.round(e[0]);
+                var current = Unit.getStatusByLevel(unit, lv);
+                $modal.find("#unitLife").text(current.life);
+                $modal.find("#unitAttack").text(current.attack);
+                $modal.find("#unitHeal").text(current.heal);
+                $modal.find("#unitPt").text(current.pt);
+                if (lv == unit.lvMax) {
+                    $modal.find("#unitExp").text(current.minExp);
+                }
+                else {
+                    $modal.find("#unitExp").text(current.minExp + "~" + (current.maxExp - 1));
+                }
+                var skill = Unit.getSkillByLevel(unit, lv);
+                var skilltemplate = _.template(unitSkillTemplate);
+                $('#unitSkillPanel').replaceWith(skilltemplate(Unit.getSkillForTemplate(skill)));
+                initUiLanguage();
+            };
+            slider.noUiSlider.on('update', onSliderChange);
+            $modal.find("img[data-id]").click(onEvolveUnitIconClick);
+            if (Unit.getLang() == 'ja-JP') {
+                $('[data-toggle="tooltip"]').removeAttr('title');
+            }
+            else {
+                $('[data-toggle="tooltip"]').tooltip();
+            }
+            initUiLanguage();
+        });
+        $modal.on('hide.bs.modal', function (e) {
+            Backbone.history.navigate("unit");
+        });
+        $modal.on('hidden.bs.modal', function () {
+            console.log("hidden");
+            $(this).remove();
+        });
+        $modal.modal('show');
+    };
+    $.fn.setButtonActive = function (isActive) { 
+        return this.each(function () {
+            var $this = $(this);
+            $this.prop('checked', isActive);
+            isActive ? $this.parent().addClass('active') : $this.parent().removeClass('active');
+        }); 
+    };
     var doSearch = function (conditionJson) {
         console.log("doSearch", conditionJson);
         setActiveMenu("unitsearch");
@@ -206,68 +239,40 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
             $('#unitSearch #chkItemLimit').prop("checked", true);
             $('#unitSearch #txtSearch').val("");
             $("#unitSearch label.btn input").each(function (i, o) {
-                if (i == 0) {
-                    $(o).prop('checked', true);
-                    $(o).parent().addClass('active');
-                }
-                else {
-                    $(o).prop('checked', false);
-                    $(o).parent().removeClass('active');
-                }
+                $(o).setButtonActive(i == 0 || i == 2);
             });
             $("#unitSearch .selectpicker").each(function (i, o) {
                 $(o).selectpicker('val', "");
             });
-            app_router.navigate("unit/search/", { trigger: true });
+            Backbone.history.navigate("unit/search/", { trigger: true });
             return;
         }
         try {
-            var condition = JSON.parse(LZString.decompressFromEncodedURIComponent(conditionJson));
+            var condition = parseCondition(conditionJson);
             console.log(condition);
             //set control
             $('#unitSearch #chkItemLimit').prop("checked", condition.maxItem ? true : false);
             $('#unitSearch #txtSearch').val(condition.text);
             $("#unitSearch #searchRangeLanguage label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.language[i]);
-                condition.range.language[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.language[i]);
             });
             $("#unitSearch #searchRangeGeneral label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.general[i]);
-                condition.range.general[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.general[i]);
             });
             $("#unitSearch #searchRangeAccessory label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.accessory[i]);
-                condition.range.accessory[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.accessory[i]);
             });
             $("#unitSearch #searchRangeSkillParty label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.skill.party[i]);
-                condition.range.skill.party[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.skill.party[i]);
             });
             $("#unitSearch #searchRangeSkillActive label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.skill.active[i]);
-                condition.range.skill.active[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.skill.active[i]);
             });
             $("#unitSearch #searchRangeSkillPanel label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.skill.panel[i]);
-                condition.range.skill.panel[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.skill.panel[i]);
             });
             $("#unitSearch #searchRangeSkillLimit label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.skill.limit[i]);
-                condition.range.skill.limit[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.skill.limit[i]);
             });
             $("#unitSearch .selectpicker").each(function (i, o) {
                 $(o).selectpicker('val', condition.select[i]);
@@ -376,10 +381,10 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
             $('#searchResultCount').text("Count:" + result.size().value());
             renderIconList('#searchResultContainer', result.filter(function (o, i) {
                 return condition.maxItem ? i < condition.maxItem : true;
-            }).value());
+            }).value(), onUnitIconClick);
         } catch (error) {
             console.log("search error", error);
-            app_router.navigate("unit/search/", { trigger: true });
+            Backbone.history.navigate("unit/search/", { trigger: true });
             return;
         }
     };
@@ -417,112 +422,27 @@ define(['jquery','underscore','backbone','unit','ui','nouislider','LZString','te
                 return $(o).selectpicker('val')
             }),
         };
-        var json = LZString.compressToEncodedURIComponent(JSON.stringify(condition));
-        app_router.navigate("unit/search/" + json, { trigger: true });
+        var json = stringifyCondition(condition);
+        Backbone.history.navigate("unit/search/" + json, { trigger: true });
     };
-    var onUnitIconClick = function (event) {
-        console.log("onUnitIconClick");
-        var id = $(event.target).data('id');
-        app_router.navigate("unit/id/" + id, { trigger: true });
-    };
-    var onEvolveUnitIconClick = function (event) {
-        console.log("onEvolveUnitIconClick");
-        var $oldmodal = $(event.target).parents(".modal.in");
-        $oldmodal.on('hidden.bs.modal', function () {
-            var id = $(event.target).data('id');
-            app_router.navigate("unit/id/" + id, { trigger: true });
-        });
-        $oldmodal.modal("hide");
-    };
-    var showDetail = function (unit) {
-        var template = _.template(unitModalTemplate);
-        var $modal = $(template(Unit.getUnitForTemplate(unit)));
-        $modal.on('show.bs.modal', function (e) {
-            console.log("show");
-            $modal.find("img").error(function () {
-                $(this).unbind("error").attr("src", $(this).attr("data-src"));
-            });
-        });
-        $modal.on('shown.bs.modal', function (e) {
-            console.log("shown");
-            var slider = $modal.find('#unitLevel')[0];
-            noUiSlider.create(slider, {
-                animate: true,
-                animationDuration: 300,
-                start: unit.lvMax,
-                step: 1,
-                connect: 'lower',
-                direction: 'rtl',
-                orientation: 'vertical',
-                range: {
-                    'min': 1,
-                    'max': unit.lvMax == 1 ? 1.0001 : unit.lvMax
-                },
-                pips: {
-                    mode: 'values',
-                    values: [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 99],
-                    density: 3,
-                    stepped: true
-                },
-                tooltips: {
-                    to: function (value) {
-                        return 'Lv&nbsp;' + Math.round(value);
-                    },
-                    from: function (value) {
-                        return value.replace('Lv&nbsp;', '');
-                    }
-                }
-            });
-            var onSliderChange = function (e) {
-                var lv = Math.round(e[0]);
-                var current=Unit.getStatusByLevel(unit,lv);
-                $modal.find("#unitLife").text(current.life);
-                $modal.find("#unitAttack").text(current.attack);
-                $modal.find("#unitHeal").text(current.heal);
-                $modal.find("#unitPt").text(current.pt);
-                if (lv == unit.lvMax) {
-                    $modal.find("#unitExp").text(current.minExp);
-                }
-                else {
-                    $modal.find("#unitExp").text(current.minExp + "~" + (current.maxExp - 1));
-                }
-                var skill = Unit.getSkillByLevel(unit, lv);
-                var skilltemplate = _.template(unitSkillTemplate);
-                $('#unitSkillPanel').replaceWith(skilltemplate(Unit.getSkillForTemplate(skill)));
-                initUiLanguage();
-            };
-            slider.noUiSlider.on('update', onSliderChange);
-            $modal.find("img[data-id]").click(onEvolveUnitIconClick);
-            if (Unit.getLang() == 'ja-JP') {
-                $('[data-toggle="tooltip"]').removeAttr('title');
-            }
-            else {
-                $('[data-toggle="tooltip"]').tooltip();
-            }
-            initUiLanguage();
-        });
-        $modal.on('hide.bs.modal', function (e) {
-            app_router.navigate("unit");
-        });
-        $modal.on('hidden.bs.modal', function () {
-            console.log("hidden");
-            $(this).remove();
-        });
-        $modal.modal('show');
-    };
+    function stringifyCondition(condition) {
+        return LZString.compressToEncodedURIComponent(JSON.stringify(condition));
+    }
+    function parseCondition(conditionJson) {
+        return JSON.parse(LZString.decompressFromEncodedURIComponent(conditionJson));
+    }
+
     return {
-      router:app_router,
-      activeMenu:activeMenu,
-      initRouter:initRouter,
-      initControls:initControls,
-      initUiLanguage:initUiLanguage,  
-      setActiveMenu:setActiveMenu,
-      doPage:doPage,
-        renderIconList:renderIconList,
-        doSearch:doSearch,
-        onSearchClick:onSearchClick,
-        onUnitIconClick:onUnitIconClick,
-        onEvolveUnitIconClick:onEvolveUnitIconClick,
-        showDetail:showDetail
+        initControls: initControls,
+        initUiLanguage: initUiLanguage,
+        getActiveMenu: getActiveMenu,
+        setActiveMenu: setActiveMenu,
+        doPage: doPage,
+        renderIconList: renderIconList,
+        onUnitIconClick: onUnitIconClick,
+        onEvolveUnitIconClick: onEvolveUnitIconClick,
+        showDetail: showDetail,
+        doSearch: doSearch,
+        onSearchClick: onSearchClick
     };
 });
