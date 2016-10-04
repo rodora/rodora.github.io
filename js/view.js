@@ -218,6 +218,13 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
         });
         $modal.modal('show');
     };
+    $.fn.setButtonActive = function (isActive) { 
+        return this.each(function () {
+            var $this = $(this);
+            $this.prop('checked', isActive);
+            isActive ? $this.parent().addClass('active') : $this.parent().removeClass('active');
+        }); 
+    };
     var doSearch = function (conditionJson) {
         console.log("doSearch", conditionJson);
         setActiveMenu("unitsearch");
@@ -232,14 +239,7 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
             $('#unitSearch #chkItemLimit').prop("checked", true);
             $('#unitSearch #txtSearch').val("");
             $("#unitSearch label.btn input").each(function (i, o) {
-                if (i == 0) {
-                    $(o).prop('checked', true);
-                    $(o).parent().addClass('active');
-                }
-                else {
-                    $(o).prop('checked', false);
-                    $(o).parent().removeClass('active');
-                }
+                $(o).setButtonActive(i == 0 || i == 2);
             });
             $("#unitSearch .selectpicker").each(function (i, o) {
                 $(o).selectpicker('val', "");
@@ -248,52 +248,31 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
             return;
         }
         try {
-            var condition = JSON.parse(LZString.decompressFromEncodedURIComponent(conditionJson));
+            var condition = parseCondition(conditionJson);
             console.log(condition);
             //set control
             $('#unitSearch #chkItemLimit').prop("checked", condition.maxItem ? true : false);
             $('#unitSearch #txtSearch').val(condition.text);
             $("#unitSearch #searchRangeLanguage label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.language[i]);
-                condition.range.language[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.language[i]);
             });
             $("#unitSearch #searchRangeGeneral label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.general[i]);
-                condition.range.general[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.general[i]);
             });
             $("#unitSearch #searchRangeAccessory label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.accessory[i]);
-                condition.range.accessory[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.accessory[i]);
             });
             $("#unitSearch #searchRangeSkillParty label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.skill.party[i]);
-                condition.range.skill.party[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.skill.party[i]);
             });
             $("#unitSearch #searchRangeSkillActive label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.skill.active[i]);
-                condition.range.skill.active[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.skill.active[i]);
             });
             $("#unitSearch #searchRangeSkillPanel label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.skill.panel[i]);
-                condition.range.skill.panel[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.skill.panel[i]);
             });
             $("#unitSearch #searchRangeSkillLimit label.btn input").each(function (i, o) {
-                $(o).prop('checked', condition.range.skill.limit[i]);
-                condition.range.skill.limit[i] ?
-                    $(o).parent().addClass('active') :
-                    $(o).parent().removeClass('active');
+                $(o).setButtonActive(condition.range.skill.limit[i]);
             });
             $("#unitSearch .selectpicker").each(function (i, o) {
                 $(o).selectpicker('val', condition.select[i]);
@@ -443,9 +422,16 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
                 return $(o).selectpicker('val')
             }),
         };
-        var json = LZString.compressToEncodedURIComponent(JSON.stringify(condition));
+        var json = stringifyCondition(condition);
         Backbone.history.navigate("unit/search/" + json, { trigger: true });
     };
+    function stringifyCondition(condition) {
+        return LZString.compressToEncodedURIComponent(JSON.stringify(condition));
+    }
+    function parseCondition(conditionJson) {
+        return JSON.parse(LZString.decompressFromEncodedURIComponent(conditionJson));
+    }
+
     return {
         initControls: initControls,
         initUiLanguage: initUiLanguage,
