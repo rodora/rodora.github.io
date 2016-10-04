@@ -7,7 +7,6 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'view'], function ($, 
                 "unit/id/:id": "unitDetailRoute",
                 "unit/gid/:gid": "unitDetailByGIdRoute",
                 "unit/search/*condition": "unitSearchRoute",
-                "unit/category/*condition": "unitCategoryRoute",
                 "lang/:lang": "languageChangeRoute",
                 "lang/data/:lang": "dataLanguageChangeRoute",
                 '*path': 'defaultRoute'
@@ -53,9 +52,6 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'view'], function ($, 
         });
         app_router.on('route:unitSearchRoute', function (condition) {
             View.doSearch(condition);
-        });
-        app_router.on('route:unitCategoryRoute', function (condition) {
-            View.doCategory(condition);
         });
         app_router.on('route:languageChangeRoute', function (lang) {
             Ui.setLang(lang);

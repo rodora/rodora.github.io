@@ -446,43 +446,6 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
         var json = LZString.compressToEncodedURIComponent(JSON.stringify(condition));
         Backbone.history.navigate("unit/search/" + json, { trigger: true });
     };
-    var category = [
-        {
-            key: "yorishiro",
-            gids: [169,170,171,172,221,222,223,224,299,300,301,314,315,316,327,328,329,345,362,363,364,415,416,510,538,539,625,626,677,911,995,996,997,998,1000,1093,1307,1308,1309,1310,1596]
-        },
-        {
-            key: "yorishiro-tree",
-            gids: [1193,1194,1195,1196,1197,1198,1199,1200,1201,1202,1203,1204,1205,1206,1207,1208,1209,1210,1211,1212,1213,1214,1215,1216,1217,1218,1219,1220,1221,1222,1223,1224,1225,1226,1227,1228,1422,1423,1424]
-        },
-    ];
-    var haveUnit = new BitSet;
-    var doCategory = function (condition) {
-        console.log("doCategory");
-        setActiveMenu("unitcategory");
-        $("#categoryContainer").empty();
-        _.each(category, function (o, i) {
-            var group = {};
-            group.name = o.key;
-            group.unitlist = [];
-            _.each(o.gids, function (gid) {
-                var unit = _.find(Unit.data.unit, function (o) {
-                    return o.gId == gid;
-                });
-                unit && group.unitlist.push(unit);
-            });
-
-            var row = $("<div>").addClass("row");
-            var colname = $("<div>").addClass("col-md-1 col-md-offset-1").text(group.name);
-            var colicon = $("<div>").addClass("col-md-9");
-            var iconContainer = $("<div>").addClass("icon-list icon-list-category");
-            renderIconList(iconContainer, group.unitlist, function (event) {
-
-            });
-            $("#categoryContainer").append(row.append(colname).append(colicon.append(iconContainer)));
-        });
-        $("#categoryContainer").find("img").addClass("icon-nothave")
-    };
     return {
         initControls: initControls,
         initUiLanguage: initUiLanguage,
@@ -494,7 +457,6 @@ define(['jquery', 'underscore', 'backbone', 'unit', 'ui', 'nouislider', 'LZStrin
         onEvolveUnitIconClick: onEvolveUnitIconClick,
         showDetail: showDetail,
         doSearch: doSearch,
-        onSearchClick: onSearchClick,
-        doCategory: doCategory
+        onSearchClick: onSearchClick
     };
 });
