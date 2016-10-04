@@ -16,13 +16,14 @@ require.config({
         "backbone": "libs/backbone-min",
         "nprogress": "libs/nprogress",
         "LZString": "libs/lz-string.min",
+        "bitset": "libs/bitset.min",
         "nouislider": "libs/nouislider.min",
         "bootstrap": "libs/bootstrap.min",
         "bootstrap-select": "libs/bootstrap-select.min"
     }
 });
 NProgress.start();
-require(['jquery', 'underscore',  'unit', 'ui', 'view'], function ($, _, Unit, Ui, View) {
+require(['jquery', 'underscore', 'unit', 'ui', 'view', 'router'], function ($, _, Unit, Ui, View, Router) {
     $(function () {
         NProgress.set(0.33);
         View.initUiLanguage();
@@ -38,11 +39,14 @@ require(['jquery', 'underscore',  'unit', 'ui', 'view'], function ($, _, Unit, U
                     localStorage.setItem("lastUpdate." + lang, JSON.stringify(new Date()))
                     Unit.applyLanguage(lang);
                     NProgress.inc();
-                    View.initRouter();
+                    Router.init();
                     NProgress.inc();
                     View.initControls();
                     NProgress.done();
                 });
             });
     });
+}, function (err) {
+    console.log("network error, will auto reload.");
+    location.reload();
 });
