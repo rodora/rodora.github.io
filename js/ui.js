@@ -27,6 +27,7 @@ define(['jquery', 'underscore'], function ($, _) {
     data["info"] = { "ja-JP": "お知らせ", "zh-TW": "通知", "en-US": "Notices", "zh-CN": "游戏公告" };
     data["ui"] = { "ja-JP": "", "zh-TW": "界面語言", "en-US": "UI", "zh-CN": "界面语言" };
     data["data"] = { "ja-JP": "", "zh-TW": "資料語言", "en-US": "Data", "zh-CN": "数据语言" };
+    data["helptranslation"] = { "ja-JP": " ", "zh-TW": "協助翻譯", "en-US": "Help Translation", "zh-CN": "协助翻译" };
     //unit detail
     data["life"] = { "ja-JP": "HP", "zh-TW": "HP", "en-US": "HP", "zh-CN": "HP" };
     data["attack"] = { "ja-JP": "攻撃力", "zh-TW": "攻擊力", "en-US": "ATK", "zh-CN": "攻击力" };
