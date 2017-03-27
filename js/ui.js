@@ -46,6 +46,7 @@ define(['jquery', 'underscore'], function ($, _) {
     data["story"] = { "ja-JP": "ストーリー", "zh-TW": "故事", "en-US": "Story", "zh-CN": "故事" };
     data["cutin"] = { "ja-JP": "カットイン台詞", "zh-TW": "切入台詞", "en-US": "Special Move Lines", "zh-CN": "特写台词" };
     data["accessory"] = { "ja-JP": "アクセサリー", "zh-TW": "飾品", "en-US": "Accessory", "zh-CN": "饰品" };
+    data["lasttext"] = { "ja-JP": "ラストカットイン", "zh-TW": "最終切入台詞", "en-US": "Final Cutin", "zh-CN": "最终特写台词" };
     //search
 
 

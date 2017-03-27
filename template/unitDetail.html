@@ -5,10 +5,10 @@
                 <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span
                             aria-hidden='true'>&times;</span></button>
                 <h4 class='modal-title' id='myModalLabel'>
-                        <span style="padding-right:10px">No.<%= gId %></span>
-                        <span style="padding-right:10px" data-toggle="tooltip" title="<%= name %>"><%= lang?lang.name:name %></span>
-                        <span><%= star %></span>
-                    </h4>
+                    <span style="padding-right:10px">No.<%= gId %></span>
+                    <span style="padding-right:10px" data-toggle="tooltip" title="<%= name %>"><%= lang?lang.name:name %></span>
+                    <span><%= star %></span>
+                </h4>
             </div>
             <div class='modal-body'>
                 <div class="media">
@@ -135,6 +135,19 @@
                                     </div>
                                 </div>
                                 <% } %>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" data-toggle="collapse" data-parent="#unitExtraInfo" data-target="#collapseLastText" data-lang="lasttext">Last Text
+                                        </div>
+                                        <div id="collapseLastText" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <div style="text-align:center;">
+                                                    <p data-toggle="tooltip" title="<%= lastText %>">
+                                                        <%= lang&&lang.lastText?lang.lastText:lastText %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                 </div>
             </div>
         </div>
